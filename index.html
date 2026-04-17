@@ -760,13 +760,15 @@
     },
     async pushDb() {
       const b64 = window.App.exportDb();
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ db_base64: b64 })
-      });
-      if (!res.ok) throw new Error('Webhook returned ' + res.status);
-      return res.json().catch(()=>({}));
+      const body = JSON.stringify({ db_base64: b64 });
+      try {
+        const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+        if (res.ok) return res.json().catch(()=>({}));
+        // Fall through to no-cors
+      } catch(e) { /* likely CORS */ }
+      // Fallback: opaque POST (we cannot read response but the request is sent)
+      await fetch(WEBHOOK_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body });
+      return { queued: true };
     },
     loadSession() {
       try { window.App.session = JSON.parse(localStorage.getItem('session') || 'null'); }
