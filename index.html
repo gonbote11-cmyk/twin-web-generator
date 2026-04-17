@@ -25,7 +25,33 @@
 .frozen-plan summary:hover{color:var(--text)}
 .frozen-plan .progress-step{padding:3px 0;font-size:12px}
 .resumed-banner{background:var(--surface-2);border:1px solid var(--border);padding:6px 10px;border-radius:6px;font-style:italic;color:var(--muted)}
-</style><script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script><script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script></head><body><section id="view-login"><div class="login-card"><h1>Generador de webs con <span>IA</span></h1><p>Inicia sesión para continuar</p><form id="login-form"><label>Usuario<input name="username" autocomplete="username" required></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Iniciar sesión</button></form><div id="login-error" class="error" role="alert"></div></div></section><section id="view-app"><aside class="sidebar"><div class="logo">Generador <span>IA</span></div><nav><a href="#generate" data-nav="generate">Generar</a><a href="#history" data-nav="history">Historial</a><a href="#admin" data-nav="admin" id="admin-link" style="display:none">Administración</a></nav><div style="margin-top:auto"><div id="user-chip" class="user-chip"></div><button id="signout-btn" class="btn btn-ghost">Cerrar sesión</button></div></aside><main class="main"><div id="panel-generate" class="panel panel-chat" style="display:none"><h1 id="project-title">Proyecto nuevo</h1><div class="project-meta"><span id="project-id-chip" class="chip">—</span><button id="new-project-btn" class="btn">Nuevo proyecto</button></div><div id="gen-guard-user" class="guard" style="display:none">Solo los administradores pueden generar sitios. Pide acceso a un administrador.</div><div class="chat-layout"><section class="chat-col"><div class="chat-messages" id="chat-messages" aria-live="polite"></div><div id="file-chips" class="file-chips"></div><form id="chat-form" class="chat-form"><label class="drop-zone" id="drop-zone"><input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg"><span>Arrastra archivos aquí o haz clic para subir</span></label><textarea id="chat-input" name="message" rows="3" placeholder="Describe la web que quieres generar. Por ejemplo: una landing oscura para una cafetería de especialidad con menú y reservas."></textarea><div class="chat-actions"><button type="submit" id="chat-send" class="btn btn-primary">Enviar</button><span id="gen-status" class="status"></span></div></form></section><section class="preview-col"><div class="tabs"><button data-tab="preview" class="tab active">Vista previa</button><button data-tab="files" class="tab">Archivos</button><button data-tab="code" class="tab">Código</button><button data-tab="actions" class="tab">Acciones</button></div><div class="tab-content" id="tab-preview"><iframe id="preview-frame" sandbox="allow-scripts" title="Vista previa"></iframe></div><div class="tab-content" id="tab-files" style="display:none"><div class="files-section"><h3>Archivos subidos</h3><div id="inputs-list" class="file-list muted">Todavía no has subido archivos.</div></div><div class="files-section"><h3>Archivos generados</h3><div id="outputs-list" class="file-list muted">Aún no se ha generado ningún archivo.</div></div></div><div class="tab-content" id="tab-code" style="display:none"><div id="code-file-tabs" class="file-tabs"></div><pre><code id="code-view"></code></pre></div><div class="tab-content" id="tab-actions" style="display:none"><div class="action-row"><button id="download-zip-btn" class="btn">Descargar ZIP</button><span class="muted">Solo archivos generados.</span></div><div class="action-row"><label>Slug de publicación <input type="text" id="publish-slug" placeholder="mi-sitio" pattern="[a-z0-9-]+"></label><button id="publish-btn" class="btn btn-primary">Publicar</button><span id="publish-status" class="status"></span></div></div></section></div></div><div id="panel-history" class="panel" style="display:none"><h1>Tus proyectos</h1><div id="history-empty" class="muted">Sin proyectos todavía. Crea uno desde Generar.</div><table id="history-table"><thead><tr><th>Título</th><th>Usuario</th><th>Actualizado</th><th>Mensajes</th><th>Publicado en</th><th></th></tr></thead><tbody></tbody></table></div><div id="panel-admin" class="panel" style="display:none"><h1>Administración</h1><div class="warning">Los cambios se confirman al repositorio público. Este es un sistema de autenticación de demostración — no lo uses en producción.</div><form id="add-user-form" class="card"><h3>Crear usuario</h3><label>Usuario<input name="username" type="text" required></label><label>Contraseña<input name="password" type="password" required></label><label>Rol<select name="role"><option value="user">usuario</option><option value="admin">admin</option></select></label><button type="submit" class="btn btn-primary">Crear</button><span id="admin-sync-badge" class="badge">Sin cambios</span><div id="admin-status" class="status" role="status"></div></form><table id="users-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></main></section><script id="app-core">
+
+.debug-toggle{position:fixed;bottom:16px;right:16px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:999px;font-size:12px;cursor:pointer;z-index:9999;font-family:var(--font)}
+.debug-toggle:hover{color:var(--text);background:var(--surface)}
+#debug-drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--surface);border-left:1px solid var(--border);z-index:9998;display:flex;flex-direction:column;overflow:hidden}
+#debug-drawer[aria-hidden="false"]{display:flex !important}
+.debug-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.debug-head strong{color:var(--text);font-size:13px}
+.debug-head .btn{padding:4px 10px;font-size:11px}
+.debug-body{flex:1;overflow:auto;padding:12px;font-family:monospace;font-size:11px;color:#d4d4d8}
+.debug-entry{border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:8px;background:#0a0a10;white-space:pre-wrap;word-break:break-word}
+.debug-entry.error{border-color:var(--danger)}
+.debug-entry.ok{border-color:var(--success)}
+.debug-entry.network{border-color:var(--warning)}
+.debug-entry .k{color:var(--muted)}
+.debug-entry .s{color:var(--accent-light, #a78bfa)}
+</style><script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script><script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script></head><body><section id="view-login"><div class="login-card"><h1>Generador de webs con <span>IA</span></h1><p>Inicia sesión para continuar</p><form id="login-form"><label>Usuario<input name="username" autocomplete="username" required></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Iniciar sesión</button></form><div id="login-error" class="error" role="alert"></div></div></section><section id="view-app"><aside class="sidebar"><div class="logo">Generador <span>IA</span></div><nav><a href="#generate" data-nav="generate">Generar</a><a href="#history" data-nav="history">Historial</a><a href="#admin" data-nav="admin" id="admin-link" style="display:none">Administración</a></nav><div style="margin-top:auto"><div id="user-chip" class="user-chip"></div><button id="signout-btn" class="btn btn-ghost">Cerrar sesión</button></div></aside><main class="main"><div id="panel-generate" class="panel panel-chat" style="display:none"><h1 id="project-title">Proyecto nuevo</h1><div class="project-meta"><span id="project-id-chip" class="chip">—</span><button id="new-project-btn" class="btn">Nuevo proyecto</button></div><div id="gen-guard-user" class="guard" style="display:none">Solo los administradores pueden generar sitios. Pide acceso a un administrador.</div><div class="chat-layout"><section class="chat-col"><div class="chat-messages" id="chat-messages" aria-live="polite"></div><div id="file-chips" class="file-chips"></div><form id="chat-form" class="chat-form"><label class="drop-zone" id="drop-zone"><input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg"><span>Arrastra archivos aquí o haz clic para subir</span></label><textarea id="chat-input" name="message" rows="3" placeholder="Describe la web que quieres generar. Por ejemplo: una landing oscura para una cafetería de especialidad con menú y reservas."></textarea><div class="chat-actions"><button type="submit" id="chat-send" class="btn btn-primary">Enviar</button><span id="gen-status" class="status"></span></div></form></section><section class="preview-col"><div class="tabs"><button data-tab="preview" class="tab active">Vista previa</button><button data-tab="files" class="tab">Archivos</button><button data-tab="code" class="tab">Código</button><button data-tab="actions" class="tab">Acciones</button></div><div class="tab-content" id="tab-preview"><iframe id="preview-frame" sandbox="allow-scripts" title="Vista previa"></iframe></div><div class="tab-content" id="tab-files" style="display:none"><div class="files-section"><h3>Archivos subidos</h3><div id="inputs-list" class="file-list muted">Todavía no has subido archivos.</div></div><div class="files-section"><h3>Archivos generados</h3><div id="outputs-list" class="file-list muted">Aún no se ha generado ningún archivo.</div></div></div><div class="tab-content" id="tab-code" style="display:none"><div id="code-file-tabs" class="file-tabs"></div><pre><code id="code-view"></code></pre></div><div class="tab-content" id="tab-actions" style="display:none"><div class="action-row"><button id="download-zip-btn" class="btn">Descargar ZIP</button><span class="muted">Solo archivos generados.</span></div><div class="action-row"><label>Slug de publicación <input type="text" id="publish-slug" placeholder="mi-sitio" pattern="[a-z0-9-]+"></label><button id="publish-btn" class="btn btn-primary">Publicar</button><span id="publish-status" class="status"></span></div></div></section></div></div><div id="panel-history" class="panel" style="display:none"><h1>Tus proyectos</h1><div id="history-empty" class="muted">Sin proyectos todavía. Crea uno desde Generar.</div><table id="history-table"><thead><tr><th>Título</th><th>Usuario</th><th>Actualizado</th><th>Mensajes</th><th>Publicado en</th><th></th></tr></thead><tbody></tbody></table></div><div id="panel-admin" class="panel" style="display:none"><h1>Administración</h1><div class="warning">Los cambios se confirman al repositorio público. Este es un sistema de autenticación de demostración — no lo uses en producción.</div><form id="add-user-form" class="card"><h3>Crear usuario</h3><label>Usuario<input name="username" type="text" required></label><label>Contraseña<input name="password" type="password" required></label><label>Rol<select name="role"><option value="user">usuario</option><option value="admin">admin</option></select></label><button type="submit" class="btn btn-primary">Crear</button><span id="admin-sync-badge" class="badge">Sin cambios</span><div id="admin-status" class="status" role="status"></div></form><table id="users-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></main>
+<aside id="debug-drawer" aria-hidden="true" style="display:none">
+  <div class="debug-head">
+    <strong>Depuración</strong>
+    <div>
+      <button type="button" id="debug-clear" class="btn btn-ghost" title="Limpiar">Limpiar</button>
+      <button type="button" id="debug-close" class="btn btn-ghost" title="Cerrar">×</button>
+    </div>
+  </div>
+  <div id="debug-body" class="debug-body"></div>
+</aside>
+<button type="button" id="debug-toggle" class="debug-toggle" title="Abrir panel de depuración" aria-label="Abrir panel de depuración">🐞 Depurar</button></section><script id="app-core">
 
 (function(){
   const WEBHOOK_DB_UPLOAD = "https://build.twin.so/triggers/1811eb43-8aad-4395-b889-32006bdb869e/webhook";
@@ -110,13 +136,33 @@
     exportDb() { return window.App.u8ToB64(window.App.db.export()); },
 
     async postWebhook(url, payload) {
-      const body = JSON.stringify(payload);
+      let body;
+      try { body = JSON.stringify(payload); }
+      catch(e) { return { ok:false, error:'No se pudo serializar el payload: ' + e.message, status:0 }; }
+      const started = Date.now();
+      let dbg = { url, ts: new Date().toISOString(), bytes: body.length, status: 0, body: null, error: null, elapsed_ms: 0 };
       try {
-        const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body });
-        if (res.ok) return await res.json().catch(()=>({}));
-      } catch(e){}
-      await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body });
-      return { queued:true };
+        const res = await fetch(url, { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body });
+        const rawText = await res.text();
+        dbg.status = res.status;
+        dbg.body = rawText ? rawText.slice(0, 2000) : '';
+        dbg.elapsed_ms = Date.now() - started;
+        let parsed = null;
+        try { parsed = rawText ? JSON.parse(rawText) : {}; } catch(e) {}
+        if (!res.ok) {
+          const err = 'HTTP ' + res.status + (rawText ? ' ' + rawText.slice(0,200) : '');
+          dbg.error = err;
+          window.AppDebug && window.AppDebug.log('error', dbg);
+          return { ok:false, status:res.status, error:err, body: parsed || rawText };
+        }
+        window.AppDebug && window.AppDebug.log('ok', dbg);
+        return { ok:true, status:res.status, body: parsed || {} };
+      } catch(e) {
+        dbg.elapsed_ms = Date.now() - started;
+        dbg.error = 'fetch error: ' + e.message;
+        window.AppDebug && window.AppDebug.log('network', dbg);
+        return { ok:false, status:0, error:'fetch error: ' + e.message };
+      }
     },
 
     async pushDbAndSync(statusEl) {
@@ -694,7 +740,62 @@
     refreshPreview() {
       const frame = q('#preview-frame'); if (!frame) return;
       const index = currentProject.outputs.find(f => /(^|\/)index\.html?$/i.test(f.path)) || currentProject.outputs.find(f => /\.html?$/i.test(f.path));
-      if (!index) { frame.srcdoc = '<html lang="es"><body style="background:#0b0b12;color:#8b8ba8;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div>La vista previa aparecerá aquí tras la generación.</div></body></html>'; return; }
+      if (!index) { frame.srcdoc = '<html lang="es"><body style="background:#0b0b12;color:#8b8ba8;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div>La vista previa aparecerá aquí tras la generación.</div><script id="app-debug">
+(function(){
+  const MAX = 80;
+  const entries = [];
+  function render() {
+    const body = document.getElementById('debug-body');
+    if (!body) return;
+    body.innerHTML = entries.map(e => {
+      const cls = e.kind || '';
+      const head = '<div><span class="k">' + (e.ts||'') + '</span> · <span class="s">' + (e.kind||'') + '</span></div>';
+      return '<div class="debug-entry ' + cls + '">' + head + String(e.text||'') + '</div>';
+    }).join('') || '<div class="debug-entry">Sin eventos aún. Pulsa Enviar en el chat para ver la petición.</div>';
+    body.scrollTop = body.scrollHeight;
+  }
+  window.AppDebug = {
+    log(kind, data) {
+      const text =
+        'URL: ' + (data.url||'') + '\n' +
+        'bytes: ' + (data.bytes||0) + '\n' +
+        'status: ' + (data.status||'-') + '\n' +
+        'elapsed: ' + (data.elapsed_ms||0) + ' ms\n' +
+        (data.error ? 'error: ' + data.error + '\n' : '') +
+        (data.body ? 'body: ' + String(data.body).slice(0,800) : '');
+      entries.push({ ts: data.ts || new Date().toISOString(), kind, text });
+      while (entries.length > MAX) entries.shift();
+      render();
+    },
+    logPoll(type, jobId, status, preview) {
+      const text = 'GET ./' + type + '/' + jobId + '.json → ' + status + (preview ? '\nbody: ' + String(preview).slice(0,400) : '');
+      entries.push({ ts: new Date().toISOString(), kind: (status >= 200 && status < 300) ? 'ok' : 'network', text });
+      while (entries.length > MAX) entries.shift();
+      render();
+    },
+    logText(kind, text) {
+      entries.push({ ts: new Date().toISOString(), kind, text });
+      while (entries.length > MAX) entries.shift();
+      render();
+    },
+    clear() { entries.length = 0; render(); }
+  };
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'debug-toggle') {
+      const d = document.getElementById('debug-drawer');
+      d.style.display = 'flex';
+      d.setAttribute('aria-hidden', 'false');
+      render();
+    }
+    if (e.target && e.target.id === 'debug-close') {
+      const d = document.getElementById('debug-drawer');
+      d.style.display = 'none';
+      d.setAttribute('aria-hidden', 'true');
+    }
+    if (e.target && e.target.id === 'debug-clear') window.AppDebug.clear();
+  });
+})();
+</script></body></html>'; return; }
       let html = window.App.b64ToText(index.content_base64);
       const allf = currentProject.outputs.concat(currentProject.inputs);
       allf.forEach(f => { if (f === index) return; const p = f.path.replace(/^\.?\//,''); const du = 'data:' + (f.mime || mimeFor(f.path)) + ';base64,' + f.content_base64; html = html.split('"'+p+'"').join('"'+du+'"').split("'"+p+"'").join("'"+du+"'").split('"./'+p+'"').join('"'+du+'"').split("'./"+p+"'").join("'"+du+"'"); });
@@ -799,8 +900,27 @@
         previous_outputs: currentProject.outputs.map(f => ({ path:f.path, content: window.App.b64ToText(f.content_base64) })),
         progress_steps: steps.map(s => ({ key:s.key, label:s.label }))
       };
-      window.App.postWebhook(window.App.WEBHOOK_GENERATE, payload).catch(e => ctrl.pushLog('webhook POST error: ' + e.message));
-      ctrl.pushLog('webhook POST enviado (' + JSON.stringify(payload).length + ' bytes)');
+      ctrl.pushLog('webhook POST enviando (' + JSON.stringify(payload).length + ' bytes) → ' + window.App.WEBHOOK_GENERATE);
+      const postRes = await window.App.postWebhook(window.App.WEBHOOK_GENERATE, payload);
+      if (!postRes.ok) {
+        ctrl.pushLog('webhook POST falló: ' + postRes.error);
+        ctrl.error('No se pudo contactar el webhook: ' + postRes.error);
+        const retryBtn = document.createElement('button');
+        retryBtn.className = 'btn btn-primary';
+        retryBtn.style.marginTop = '8px';
+        retryBtn.textContent = 'Reintentar';
+        retryBtn.onclick = () => { progressEl.remove(); AppGen.sendMessage(text); };
+        progressEl.appendChild(retryBtn);
+        status.textContent = 'Error al enviar el mensaje.'; status.className='status error';
+        // Surface in chat as an assistant-style error bubble
+        const errBubble = document.createElement('div');
+        errBubble.className = 'msg system';
+        errBubble.style.color = 'var(--danger)';
+        errBubble.textContent = 'Error al contactar el webhook de generación: ' + postRes.error + '. Revisa el drawer de depuración.';
+        q('#chat-messages').appendChild(errBubble);
+        return;
+      }
+      ctrl.pushLog('webhook POST ok status=' + postRes.status);
 
       // Poll progress + draft in parallel
       const start = Date.now(); const maxMs = 180000;
@@ -811,6 +931,7 @@
           const r = await fetch('./progress/'+jobId+'.json?t='+Date.now(), { cache:'no-cache' });
           if (r.ok) {
             const t = await r.text();
+            window.AppDebug && window.AppDebug.logPoll('progress', jobId, r.status, t);
             if (t && t !== lastProgressText) {
               lastProgressText = t;
               const data = tryParseLenient(t);
@@ -820,19 +941,24 @@
                 ctrl.pushLog('progress/ actualizado: ' + (data.steps ? data.steps.length + ' pasos' : 'sin pasos'));
               }
             }
+          } else if (r.status !== 404) {
+            window.AppDebug && window.AppDebug.logPoll('progress', jobId, r.status, '');
           }
-        } catch(e){}
+        } catch(e){ window.AppDebug && window.AppDebug.logText('network','progress poll error: ' + e.message); }
         if ((Date.now() - start) % 4000 < 1100) {
           try {
             const r = await fetch('./drafts/'+jobId+'.json?t='+Date.now(), { cache:'no-cache' });
             if (r.ok) {
               const raw = await r.text();
+              window.AppDebug && window.AppDebug.logPoll('drafts', jobId, r.status, raw);
               ctrl.pushLog('drafts/ recibido ('+raw.length+' bytes)');
               const data = tryParseLenient(raw);
               if (data && (data.files || data.error)) { result = data; break; }
               else if (raw && !data) ctrl.pushLog('drafts/: JSON no parseable, seguimos esperando');
+            } else if (r.status !== 404) {
+              window.AppDebug && window.AppDebug.logPoll('drafts', jobId, r.status, '');
             }
-          } catch(e){}
+          } catch(e){ window.AppDebug && window.AppDebug.logText('network','drafts poll error: ' + e.message); }
         }
       }
 
@@ -935,7 +1061,12 @@
       status.textContent = 'Publicando…'; status.className='status pending';
       const files = currentProject.outputs.map(f => ({ path:f.path, content_base64:f.content_base64, mime:f.mime }));
       const payload = { slug, files, project_id: currentProject.id, username: window.App.session.username };
-      await window.App.postWebhook(window.App.WEBHOOK_PUBLISH, payload);
+      const pubRes = await window.App.postWebhook(window.App.WEBHOOK_PUBLISH, payload);
+      if (!pubRes.ok) {
+        status.textContent = 'Error al publicar: ' + pubRes.error;
+        status.className='status error';
+        return;
+      }
       run('UPDATE projects SET published_slug = ? WHERE id = ?', [slug, currentProject.id]);
       currentProject.published_slug = slug;
       AppGen.renderProject();
