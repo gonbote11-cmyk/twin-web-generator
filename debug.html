@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>Depurar webhook · Generador</title>
+<style>body{background:#0b0b12;color:#e8e8f0;font-family:system-ui;padding:24px;max-width:900px;margin:0 auto}h1{color:#8b5cf6}pre{background:#13131c;padding:12px;border-radius:6px;overflow:auto;font-size:12px;white-space:pre-wrap;word-break:break-word}button{background:#8b5cf6;color:#fff;border:0;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;margin-right:8px}.ok{color:#10b981}.err{color:#ef4444}input{background:#1a1a28;color:#e8e8f0;border:1px solid #262637;padding:6px 10px;border-radius:6px;width:100%;margin:4px 0;font-family:monospace}label{display:block;margin-top:8px;font-size:13px;color:#8b8ba8}</style>
+</head><body>
+<h1>Depurar webhook de generación</h1>
+<p>Esta página hace una petición directa al webhook <code>generate_site</code> y pollea <code>progress/</code> y <code>drafts/</code> para que puedas diagnosticar si el problema está en el navegador, en la red o en el backend.</p>
+<label>Prompt <input id="prompt" value="Genera una landing muy simple en modo oscuro"></label>
+<label>Usuario <input id="username" value="wilson"></label>
+<button id="run">Ejecutar smoke test</button>
+<pre id="log">Pulsa "Ejecutar smoke test" para iniciar…</pre>
+<script>
+const URL_GEN = 'https://build.twin.so/triggers/b4e1c04c-08b3-4b69-9ff2-622542871a6a/webhook';
+const log = (...args) => { const el = document.getElementById('log'); el.textContent += '\n' + args.map(a => typeof a === 'string' ? a : JSON.stringify(a, null, 2)).join(' '); };
+function clearLog(){ document.getElementById('log').textContent = ''; }
+async function run() {
+  clearLog();
+  const jobId = 'debug-' + Date.now() + '-' + Math.random().toString(36).slice(2,6);
+  const payload = {
+    job_id: jobId,
+    project_id: 'debug-project',
+    username: document.getElementById('username').value || 'wilson',
+    prompt: document.getElementById('prompt').value || 'hola',
+    locale: 'es-ES',
+    is_iteration: false,
+    history: [{role:'user', content: document.getElementById('prompt').value}],
+    inputs: [], previous_outputs: [],
+    progress_steps: [{key:'analyze', label:'Analizando tu solicitud'}]
+  };
+  log('[1/3] POST al webhook de generación:', URL_GEN);
+  log('payload bytes:', JSON.stringify(payload).length);
+  let res;
+  try { res = await fetch(URL_GEN, { method:'POST', mode:'cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); }
+  catch(e) { log('ERROR fetch:', e.message); return; }
+  const body = await res.text();
+  log('status:', res.status, res.statusText);
+  log('body:', body || '(vacío)');
+  if (!res.ok) { log('%cFalló el POST inicial', 'color:red'); return; }
+  log('[2/3] Esperando progress/drafts…');
+  const start = Date.now();
+  let finalOk = false;
+  while (Date.now() - start < 180000) {
+    await new Promise(r => setTimeout(r, 3000));
+    try {
+      const pr = await fetch('./progress/' + jobId + '.json?t=' + Date.now(), { cache:'no-cache' });
+      if (pr.ok) { const t = await pr.text(); log('progress/', pr.status, t.slice(0,400)); }
+      else log('progress/', pr.status);
+    } catch(e) { log('progress fetch err:', e.message); }
+    try {
+      const dr = await fetch('./drafts/' + jobId + '.json?t=' + Date.now(), { cache:'no-cache' });
+      if (dr.ok) { const t = await dr.text(); log('drafts/', dr.status, t.slice(0,800)); finalOk = true; break; }
+    } catch(e) { log('drafts fetch err:', e.message); }
+  }
+  log('[3/3]', finalOk ? 'Completado: archivo draft recibido.' : 'Timeout sin draft (180 s).');
+}
+document.getElementById('run').addEventListener('click', run);
+</script></body></html>
