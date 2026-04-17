@@ -16,6 +16,15 @@
 .progress-retry{background:transparent;border:1px solid var(--warning);color:var(--warning);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:8px;font-family:var(--font)}
 .progress-retry:hover{background:var(--warning);color:#13131c}
 .badge.warning{color:var(--warning);border-color:var(--warning)}
+
+.msg-attachments{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.msg-chip{font-size:11px;padding:2px 6px}
+.msg.user .msg-chip{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+.frozen-plan{margin-top:8px;padding:8px 10px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;font-size:12px}
+.frozen-plan summary{cursor:pointer;color:var(--muted);user-select:none;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.frozen-plan summary:hover{color:var(--text)}
+.frozen-plan .progress-step{padding:3px 0;font-size:12px}
+.resumed-banner{background:var(--surface-2);border:1px solid var(--border);padding:6px 10px;border-radius:6px;font-style:italic;color:var(--muted)}
 </style><script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script><script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script></head><body><section id="view-login"><div class="login-card"><h1>Generador de webs con <span>IA</span></h1><p>Inicia sesión para continuar</p><form id="login-form"><label>Usuario<input name="username" autocomplete="username" required></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Iniciar sesión</button></form><div id="login-error" class="error" role="alert"></div></div></section><section id="view-app"><aside class="sidebar"><div class="logo">Generador <span>IA</span></div><nav><a href="#generate" data-nav="generate">Generar</a><a href="#history" data-nav="history">Historial</a><a href="#admin" data-nav="admin" id="admin-link" style="display:none">Administración</a></nav><div style="margin-top:auto"><div id="user-chip" class="user-chip"></div><button id="signout-btn" class="btn btn-ghost">Cerrar sesión</button></div></aside><main class="main"><div id="panel-generate" class="panel panel-chat" style="display:none"><h1 id="project-title">Proyecto nuevo</h1><div class="project-meta"><span id="project-id-chip" class="chip">—</span><button id="new-project-btn" class="btn">Nuevo proyecto</button></div><div id="gen-guard-user" class="guard" style="display:none">Solo los administradores pueden generar sitios. Pide acceso a un administrador.</div><div class="chat-layout"><section class="chat-col"><div class="chat-messages" id="chat-messages" aria-live="polite"></div><div id="file-chips" class="file-chips"></div><form id="chat-form" class="chat-form"><label class="drop-zone" id="drop-zone"><input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg"><span>Arrastra archivos aquí o haz clic para subir</span></label><textarea id="chat-input" name="message" rows="3" placeholder="Describe la web que quieres generar. Por ejemplo: una landing oscura para una cafetería de especialidad con menú y reservas."></textarea><div class="chat-actions"><button type="submit" id="chat-send" class="btn btn-primary">Enviar</button><span id="gen-status" class="status"></span></div></form></section><section class="preview-col"><div class="tabs"><button data-tab="preview" class="tab active">Vista previa</button><button data-tab="files" class="tab">Archivos</button><button data-tab="code" class="tab">Código</button><button data-tab="actions" class="tab">Acciones</button></div><div class="tab-content" id="tab-preview"><iframe id="preview-frame" sandbox="allow-scripts" title="Vista previa"></iframe></div><div class="tab-content" id="tab-files" style="display:none"><div class="files-section"><h3>Archivos subidos</h3><div id="inputs-list" class="file-list muted">Todavía no has subido archivos.</div></div><div class="files-section"><h3>Archivos generados</h3><div id="outputs-list" class="file-list muted">Aún no se ha generado ningún archivo.</div></div></div><div class="tab-content" id="tab-code" style="display:none"><div id="code-file-tabs" class="file-tabs"></div><pre><code id="code-view"></code></pre></div><div class="tab-content" id="tab-actions" style="display:none"><div class="action-row"><button id="download-zip-btn" class="btn">Descargar ZIP</button><span class="muted">Solo archivos generados.</span></div><div class="action-row"><label>Slug de publicación <input type="text" id="publish-slug" placeholder="mi-sitio" pattern="[a-z0-9-]+"></label><button id="publish-btn" class="btn btn-primary">Publicar</button><span id="publish-status" class="status"></span></div></div></section></div></div><div id="panel-history" class="panel" style="display:none"><h1>Tus proyectos</h1><div id="history-empty" class="muted">Sin proyectos todavía. Crea uno desde Generar.</div><table id="history-table"><thead><tr><th>Título</th><th>Usuario</th><th>Actualizado</th><th>Mensajes</th><th>Publicado en</th><th></th></tr></thead><tbody></tbody></table></div><div id="panel-admin" class="panel" style="display:none"><h1>Administración</h1><div class="warning">Los cambios se confirman al repositorio público. Este es un sistema de autenticación de demostración — no lo uses en producción.</div><form id="add-user-form" class="card"><h3>Crear usuario</h3><label>Usuario<input name="username" type="text" required></label><label>Contraseña<input name="password" type="password" required></label><label>Rol<select name="role"><option value="user">usuario</option><option value="admin">admin</option></select></label><button type="submit" class="btn btn-primary">Crear</button><span id="admin-sync-badge" class="badge">Sin cambios</span><div id="admin-status" class="status" role="status"></div></form><table id="users-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></main></section><script id="app-core">
 
 (function(){
@@ -37,6 +46,14 @@
     "CREATE TABLE IF NOT EXISTS project_files (project_id TEXT, path TEXT, content_base64 TEXT, mime TEXT, kind TEXT CHECK(kind IN ('input','output')), PRIMARY KEY(project_id, path, kind));",
     "CREATE TABLE IF NOT EXISTS project_messages (id TEXT PRIMARY KEY, project_id TEXT, role TEXT CHECK(role IN ('user','assistant','system')), content TEXT, created_at TEXT DEFAULT (datetime('now')));"
   ];
+
+  function ensureColumn(db, table, col, decl) {
+    try {
+      const res = db.exec("PRAGMA table_info(" + table + ")");
+      const cols = res[0] ? res[0].values.map(r => r[1]) : [];
+      if (!cols.includes(col)) db.exec("ALTER TABLE " + table + " ADD COLUMN " + col + " " + decl);
+    } catch(e) { console.warn('ensureColumn', table, col, e.message); }
+  }
 
   function migrateGenerationsToProjects(db) {
     try {
@@ -137,6 +154,8 @@
       const db = new window.App.SQL.Database();
       db.exec(SEED_SQL);
       MIGRATIONS.forEach(m => { try { db.exec(m); } catch(e){} });
+      ensureColumn(db, 'project_messages', 'attachments_json', 'TEXT');
+      ensureColumn(db, 'project_messages', 'plan_json', 'TEXT');
       window.App.db = db;
     },
     async boot() {
@@ -151,6 +170,8 @@
           if (buf.length > 100) {
             window.App.db = new SQL.Database(buf);
             MIGRATIONS.forEach(m => { try { window.App.db.exec(m); } catch(e){} });
+            ensureColumn(window.App.db, 'project_messages', 'attachments_json', 'TEXT');
+            ensureColumn(window.App.db, 'project_messages', 'plan_json', 'TEXT');
             try { migrateGenerationsToProjects(window.App.db); } catch(e){}
             loaded = true;
           }
@@ -580,10 +601,10 @@
     loadProject(id) {
       const row = exec('SELECT id, title, published_slug FROM projects WHERE id = ?', [id])[0];
       if (!row) return;
-      const msgs = exec('SELECT id, role, content, created_at FROM project_messages WHERE project_id = ? ORDER BY created_at', [id]);
+      const msgs = exec('SELECT id, role, content, attachments_json, plan_json, created_at FROM project_messages WHERE project_id = ? ORDER BY created_at', [id]);
       const files = exec('SELECT path, content_base64, mime, kind FROM project_files WHERE project_id = ?', [id]);
       currentProject = { id: row.id, title: row.title, published_slug: row.published_slug, messages: msgs,
-        inputs: files.filter(f => f.kind==='input'), outputs: files.filter(f => f.kind==='output') };
+        inputs: files.filter(f => f.kind==='input'), outputs: files.filter(f => f.kind==='output'), _justLoaded: true };
       currentTab='preview'; currentCodeFileIdx=0;
       location.hash='#generate';
       setTimeout(()=>AppGen.renderProject(), 20);
@@ -594,10 +615,54 @@
       q('#project-title').textContent = currentProject.title || 'Proyecto';
       q('#project-id-chip').textContent = currentProject.id.slice(0,8);
       const mbox = q('#chat-messages');
-      mbox.innerHTML = currentProject.messages.map(m => {
-        const cls = m.role === 'user' ? 'user' : m.role === 'assistant' ? 'assistant' : 'system';
-        return '<div class="msg '+cls+'">'+escHTML(m.content)+'</div>';
-      }).join('') || '<div class="msg system">Escribe un mensaje y, opcionalmente, adjunta archivos para empezar.</div>';
+      const renderAttachmentChips = (json) => {
+        if (!json) return '';
+        let arr; try { arr = JSON.parse(json); } catch(e) { return ''; }
+        if (!Array.isArray(arr) || !arr.length) return '';
+        return '<div class="msg-attachments">' + arr.map(a =>
+          '<span class="file-chip msg-chip"><span>'+escHTML(a.path)+' <span class="size">'+humanSize(a.size||0)+'</span></span></span>'
+        ).join('') + '</div>';
+      };
+      const renderFrozenPlan = (json) => {
+        if (!json) return '';
+        let plan; try { plan = JSON.parse(json); } catch(e) { return ''; }
+        const steps = (plan && plan.steps) || [];
+        if (!steps.length) return '';
+        const body = steps.map(s =>
+          '<div class="progress-step done">'+
+            '<span class="icon-col"><span class="progress-icon" aria-hidden="true">✓</span></span>'+
+            '<span class="main-col"><span class="label">'+escHTML(s.label||'')+'</span>'+
+            (s.detail ? '<span class="detail">'+escHTML(s.detail)+'</span>' : '')+
+            '</span>'+
+            (s.duration_ms != null ? '<span class="time">hecho en '+window.AppI18n.formatDuration(s.duration_ms)+'</span>' : '')+
+          '</div>'
+        ).join('');
+        return '<details class="frozen-plan"><summary>Ver pasos aplicados ('+steps.length+')</summary>'+body+'</details>';
+      };
+      if (currentProject.messages.length === 0) {
+        mbox.innerHTML = '<div class="msg system">Escribe un mensaje y, opcionalmente, adjunta archivos para empezar.</div>';
+      } else {
+        // Optional "resumed" banner when >1 message loaded from history and timestamps indicate prior session
+        const uCount = currentProject.messages.filter(m => m.role==='user').length;
+        let resumedBanner = '';
+        if (uCount >= 1 && currentProject._justLoaded) {
+          const last = currentProject.messages[currentProject.messages.length-1];
+          const lastTxt = last.created_at ? window.AppI18n.formatDate(last.created_at) : '';
+          resumedBanner = '<div class="msg system resumed-banner">Proyecto retomado · '+currentProject.messages.length+' mensajes · última actividad ' + (lastTxt || '—') + '</div>';
+          currentProject._justLoaded = false;
+        }
+        mbox.innerHTML = resumedBanner + currentProject.messages.map(m => {
+          if (m.role === 'system') {
+            // Hide auto-summary rows from visible chat to reduce noise
+            if ((m.content||'').startsWith('[resumen] ')) return '';
+            return '<div class="msg system">'+escHTML(m.content)+'</div>';
+          }
+          const cls = m.role === 'user' ? 'user' : 'assistant';
+          const attach = m.role === 'user' ? renderAttachmentChips(m.attachments_json) : '';
+          const frozen = m.role === 'assistant' ? renderFrozenPlan(m.plan_json) : '';
+          return '<div class="msg '+cls+'">'+escHTML(m.content)+attach+frozen+'</div>';
+        }).join('');
+      }
       mbox.scrollTop = mbox.scrollHeight;
       const chips = q('#file-chips');
       chips.innerHTML = currentProject.inputs.map(f =>
@@ -665,16 +730,46 @@
         run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)', [currentProject.id, f.path, b64, mime, 'output']);
       });
     },
-    addMessage(role, content) {
+    addMessage(role, content, extras) {
+      extras = extras || {};
       const id = uuid();
-      run('INSERT INTO project_messages (id, project_id, role, content) VALUES (?, ?, ?, ?)', [id, currentProject.id, role, content]);
-      currentProject.messages.push({ id, role, content, created_at:new Date().toISOString() });
+      const attachments_json = extras.attachments_json || null;
+      const plan_json = extras.plan_json || null;
+      run('INSERT INTO project_messages (id, project_id, role, content, attachments_json, plan_json) VALUES (?, ?, ?, ?, ?, ?)', [id, currentProject.id, role, content, attachments_json, plan_json]);
+      currentProject.messages.push({ id, role, content, attachments_json, plan_json, created_at:new Date().toISOString() });
+    },
+    // Auto-summarize history if too long. Returns history array to send to LLM.
+    buildHistoryForLLM() {
+      const msgs = currentProject.messages.filter(m => m.role==='user' || m.role==='assistant' || m.role==='system');
+      if (msgs.length <= 50) return msgs.map(m => ({ role:m.role, content:m.content }));
+      // Keep last 10 plus any existing 'system' summary
+      const tail = msgs.slice(-10);
+      const head = msgs.slice(0, -10);
+      // Look for an existing summary row (role='system' and content starts with "[resumen] ")
+      const existing = currentProject.messages.find(m => m.role==='system' && (m.content||'').startsWith('[resumen] '));
+      let summary;
+      if (existing) summary = existing.content;
+      else {
+        // Generate a concise plain summary client-side (no LLM roundtrip to keep it deterministic here):
+        const parts = head.filter(m => m.role==='user' || m.role==='assistant').map(m => (m.role==='user'?'U:':'A:') + (m.content||'').slice(0,120));
+        summary = '[resumen] Contexto previo (' + head.length + ' mensajes): ' + parts.slice(0,15).join(' | ');
+        if (summary.length > 1500) summary = summary.slice(0, 1500) + '…';
+        // Persist once so future turns reuse it
+        const id = uuid();
+        run("INSERT INTO project_messages (id, project_id, role, content) VALUES (?, ?, 'system', ?)", [id, currentProject.id, summary]);
+        currentProject.messages.push({ id, role:'system', content:summary, created_at:new Date().toISOString() });
+      }
+      return [{ role:'system', content: summary }].concat(tail.map(m => ({ role:m.role, content:m.content })));
     },
 
     async sendMessage(text) {
       if (!text || !text.trim()) return;
       const status = q('#gen-status');
-      AppGen.addMessage('user', text);
+      // Persist user message with a snapshot of attached inputs
+      const attSnap = currentProject.inputs.map(f => ({ path:f.path, mime:f.mime, size: Math.floor((f.content_base64||'').length*3/4) }));
+      AppGen.addMessage('user', text, { attachments_json: attSnap.length ? JSON.stringify(attSnap) : null });
+      // Fire a non-blocking db sync so the message survives reloads even if generation fails later
+      window.App.pushDbAndSync(null).catch(()=>{});
       const isIteration = currentProject.outputs.length > 0;
       const firstUserMsg = currentProject.messages.filter(m => m.role==='user').length === 1;
       if (firstUserMsg) { const title = text.slice(0,80); currentProject.title = title; run('UPDATE projects SET title = ?, updated_at = datetime(\'now\') WHERE id = ?', [title, currentProject.id]); }
@@ -699,7 +794,7 @@
       const payload = {
         job_id: jobId, project_id: currentProject.id, username: window.App.session.username,
         prompt: text, mode: 'auto', locale: 'es-ES', is_iteration: isIteration,
-        history: currentProject.messages.filter(m => m.role==='user' || m.role==='assistant').map(m => ({ role:m.role, content:m.content })),
+        history: AppGen.buildHistoryForLLM(),
         inputs: currentProject.inputs.map(f => ({ path:f.path, content_base64:f.content_base64, mime:f.mime })),
         previous_outputs: currentProject.outputs.map(f => ({ path:f.path, content: window.App.b64ToText(f.content_base64) })),
         progress_steps: steps.map(s => ({ key:s.key, label:s.label }))
@@ -780,7 +875,8 @@
       const totalBytes = currentProject.outputs.reduce((s,f)=>s+fileSize(f.content_base64),0);
       const lastDetail = result.files.length + ' archivo(s) · ' + humanSize(totalBytes);
 
-      AppGen.addMessage('assistant', result.message || 'Cambios aplicados.');
+      const planJsonStr = result.plan ? JSON.stringify(result.plan) : (Array.isArray(result.steps) ? JSON.stringify({steps: result.steps, summary: result.summary}) : null);
+      AppGen.addMessage('assistant', result.message || 'Cambios aplicados.', { plan_json: planJsonStr });
       AppGen.renderProject();
 
       // Now the tricky part: db_upload push + ETag poll up to 60s
@@ -856,11 +952,29 @@
       if (!tbody) return;
       if (rows.length === 0) { empty.style.display=''; table.style.display='none'; return; }
       empty.style.display='none'; table.style.display='';
+      const isAdmin = s.role === 'admin';
       tbody.innerHTML = rows.map(r => {
         const pub = r.published_slug ? ('<a href="./sites/'+escHTML(r.published_slug)+'/" target="_blank">'+escHTML(r.published_slug)+'</a>') : '<span class="muted">—</span>';
-        return '<tr><td>'+escHTML(r.title||'(sin título)')+'</td><td>'+escHTML(r.username||'')+'</td><td>'+escHTML(window.AppI18n.formatDate(r.updated_at))+'</td><td>'+escHTML(r.msg_count||0)+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Abrir</button></td></tr>';
+        const nMsg = Number(r.msg_count||0);
+        const msgCol = nMsg + ' ' + (nMsg === 1 ? 'mensaje' : 'mensajes');
+        const delBtn = isAdmin ? '<button class="btn btn-danger history-delete" data-id="'+escHTML(r.id)+'" data-slug="'+escHTML(r.published_slug||'')+'">Eliminar</button>' : '';
+        return '<tr><td>'+escHTML(r.title||'(sin título)')+'</td><td>'+escHTML(r.username||'')+'</td><td>'+escHTML(window.AppI18n.formatDate(r.updated_at))+'</td><td>'+msgCol+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Abrir</button>'+delBtn+'</td></tr>';
       }).join('');
       all('.history-open').forEach(btn => { btn.addEventListener('click', () => AppGen.loadProject(btn.getAttribute('data-id'))); });
+      all('.history-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const pid = btn.getAttribute('data-id');
+          const slug = btn.getAttribute('data-slug') || '';
+          const pubWarning = slug ? '\n\nNota: el sitio publicado en /sites/' + slug + '/ seguirá accesible. Elimínalo manualmente desde el repositorio si lo necesitas.' : '';
+          if (!confirm('¿Eliminar este proyecto? Se borrarán sus mensajes y archivos del chat.' + pubWarning)) return;
+          run('DELETE FROM project_messages WHERE project_id = ?', [pid]);
+          run('DELETE FROM project_files WHERE project_id = ?', [pid]);
+          run('DELETE FROM projects WHERE id = ?', [pid]);
+          if (currentProject && currentProject.id === pid) { currentProject = null; }
+          AppGen.renderHistory();
+          window.App.pushDbAndSync(null).catch(()=>{});
+        });
+      });
     }
   };
   window.AppGen = AppGen;
