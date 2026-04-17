@@ -1,774 +1,857 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organization Management</title>
-  <meta name="description" content="Admin dashboard for managing organizations and users." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Website Generator</title>
+  <meta name="description" content="Generate and publish static websites from prompts.">
   <style>
+    :root {
+      --bg: #0b0b12;
+      --surface: #13131c;
+      --surface-2: #1a1a28;
+      --border: #262637;
+      --muted: #8b8ba8;
+      --text: #e8e8f0;
+      --accent: #8b5cf6;
+      --accent-hover: #7c3aed;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --color-sidebar: #111827;
-      --color-main: #f9fafb;
-      --color-accent: #4f46e5;
-      --color-accent-hover: #4338ca;
-      --color-muted: #6b7280;
-      --color-danger: #dc2626;
-      --color-success: #16a34a;
-      --color-warning-bg: #fef3c7;
-      --color-warning-border: #d97706;
-      --color-border: #e5e7eb;
-      --color-surface: #ffffff;
-      --color-text: #111827;
-      --color-text-light: #374151;
-      --sidebar-width: 220px;
-      --topbar-height: 56px;
-      --radius: 6px;
-      --shadow: 0 1px 3px 0 rgba(0,0,0,.10), 0 1px 2px -1px rgba(0,0,0,.06);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.06);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.6;
     }
 
-    html, body { height: 100%; }
-
-    body {
-      background: var(--color-main);
-      color: var(--color-text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* ── Login ─────────────────────────────────────────── */
+    /* ── Login View ── */
     #view-login {
-      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--color-main);
+      min-height: 100vh;
       padding: 24px;
     }
 
     .login-card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 10px;
-      box-shadow: var(--shadow-md);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
       padding: 40px 36px;
       width: 100%;
       max-width: 380px;
     }
 
     .login-card .login-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: var(--color-text);
-      margin-bottom: 4px;
+      color: var(--text);
+      margin-bottom: 6px;
+      text-align: center;
     }
 
     .login-card .login-subtitle {
-      color: var(--color-muted);
-      font-size: 13px;
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
       margin-bottom: 28px;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
+    .login-card form { display: flex; flex-direction: column; gap: 14px; }
 
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--color-text-light);
-      margin-bottom: 5px;
-    }
-
-    .form-group input,
-    .form-group select {
-      display: block;
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 14px;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      background: var(--color-surface);
-      color: var(--color-text);
-      transition: border-color .15s, box-shadow .15s;
-      outline: none;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: var(--color-accent);
-      box-shadow: 0 0 0 3px rgba(79,70,229,.15);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: var(--radius);
-      border: none;
-      cursor: pointer;
-      transition: background .15s, opacity .15s;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    .btn:disabled { opacity: .55; cursor: not-allowed; }
-
-    .btn-primary {
-      background: var(--color-accent);
-      color: #fff;
-    }
-    .btn-primary:hover:not(:disabled) { background: var(--color-accent-hover); }
-
-    .btn-secondary {
-      background: var(--color-surface);
-      color: var(--color-text-light);
-      border: 1px solid var(--color-border);
-    }
-    .btn-secondary:hover:not(:disabled) { background: #f3f4f6; }
-
-    .btn-danger {
-      background: var(--color-danger);
-      color: #fff;
-    }
-    .btn-danger:hover:not(:disabled) { background: #b91c1c; }
-
-    .btn-sm { padding: 4px 10px; font-size: 12px; }
-
-    .btn-full { width: 100%; }
-
-    .error-msg {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--color-danger);
-      min-height: 18px;
-    }
-
-    .status-msg {
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--color-success);
-      min-height: 18px;
-    }
-
-    /* ── Dashboard layout ──────────────────────────────── */
-    .topbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--topbar-height);
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-border);
+    .login-card label {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 100;
-      box-shadow: var(--shadow);
+      flex-direction: column;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .topbar-title {
+    .login-card input[type="text"],
+    .login-card input[type="password"] {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
       font-size: 15px;
-      font-weight: 700;
-      color: var(--color-text);
-      letter-spacing: -.01em;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: var(--font);
     }
 
-    .topbar-right {
+    .login-card input:focus {
+      border-color: var(--accent);
+    }
+
+    /* ── App View ── */
+    #view-app {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #0a0a10;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px 20px;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      letter-spacing: -0.01em;
     }
 
-    #user-chip,
-    .user-chip {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--color-muted);
-      background: #f3f4f6;
-      border: 1px solid var(--color-border);
-      border-radius: 20px;
-      padding: 3px 12px;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: var(--sidebar-width) 1fr;
-      min-height: calc(100vh - var(--topbar-height));
-      margin-top: var(--topbar-height);
-    }
-
-    .sidebar {
-      background: var(--color-sidebar);
-      padding: 20px 0;
-      position: sticky;
-      top: var(--topbar-height);
-      height: calc(100vh - var(--topbar-height));
-      overflow-y: auto;
+    .sidebar-logo .logo-accent {
+      color: var(--accent);
     }
 
     .sidebar nav {
+      flex: 1;
+      padding: 16px 12px;
       display: flex;
       flex-direction: column;
       gap: 2px;
-      padding: 0 10px;
     }
 
     .sidebar nav a {
-      display: block;
-      padding: 9px 14px;
-      color: #d1d5db;
-      text-decoration: none;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      transition: background .13s, color .13s;
-    }
-
-    .sidebar nav a:hover,
-    .sidebar nav a.active {
-      background: rgba(79,70,229,.25);
-      color: #fff;
-    }
-
-    .sidebar nav a.active {
-      background: var(--color-accent);
-      color: #fff;
-    }
-
-    .content {
-      padding: 28px 32px;
-      overflow-y: auto;
-    }
-
-    /* ── Metrics ───────────────────────────────────────── */
-    .metrics-row {
-      display: flex;
-      gap: 18px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .metric {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      flex: 1 1 160px;
-      box-shadow: var(--shadow);
-    }
-
-    .metric-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--color-muted);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      margin-bottom: 8px;
-    }
-
-    .metric-value {
-      display: block;
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--color-text);
-      line-height: 1;
-    }
-
-    /* ── Panel ─────────────────────────────────────────── */
-    .panel {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-    }
-
-    .panel h2 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .panel p {
-      color: var(--color-muted);
-      font-size: 14px;
-    }
-
-    /* ── Section headings + toolbar ────────────────────── */
-    .section-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.12s, color 0.12s;
+      cursor: pointer;
+    }
+
+    .sidebar nav a:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .sidebar nav a.active {
+      background: rgba(139,92,246,0.15);
+      color: var(--accent);
+    }
+
+    .sidebar-bottom {
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
       gap: 10px;
     }
 
-    .section-header h2 {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--color-text);
-    }
-
-    /* ── Inline form ───────────────────────────────────── */
-    .inline-form {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .inline-form .form-row {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
-
-    .inline-form .form-row .form-group {
-      flex: 1 1 160px;
-      margin-bottom: 0;
-    }
-
-    .inline-form .form-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    /* ── Table ─────────────────────────────────────────── */
-    .table-wrap {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
+    #user-chip {
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 10px;
+      background: var(--surface-2);
+      border-radius: 6px;
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: var(--shadow);
-      overflow-x: auto;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    table {
+    #signout-btn {
       width: 100%;
-      border-collapse: collapse;
+      text-align: center;
+    }
+
+    /* ── Main ── */
+    .main {
+      padding: 32px;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+
+    .panel {
+      max-width: 960px;
+    }
+
+    .panel h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .muted { color: var(--muted); font-size: 14px; }
+
+    .panel > .muted { margin-bottom: 24px; }
+
+    /* ── Guard ── */
+    .guard {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    /* ── Gen Form ── */
+    #gen-form {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #gen-form label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    #gen-form textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      padding: 12px 14px;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+      min-height: 120px;
+    }
+
+    #gen-form textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .gen-actions {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-top: 28px;
+      gap: 0;
+    }
+
+    .tab {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      margin-bottom: -1px;
+      transition: color 0.12s;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab.active {
+      color: var(--text);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab-content { margin-top: 16px; }
+
+    /* ── Preview iframe ── */
+    #preview-frame {
+      width: 100%;
+      height: 600px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      display: block;
+    }
+
+    /* ── Code view ── */
+    .file-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .file-tabs button {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--muted);
+      font-family: var(--font);
+      font-size: 12px;
+      padding: 3px 12px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .file-tabs button:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .file-tabs button.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    pre code {
+      background: #0a0a10;
+      padding: 16px;
+      border-radius: var(--radius);
+      overflow: auto;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+      color: #d4d4d8;
+      max-height: 500px;
+      display: block;
+      white-space: pre;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Actions tab ── */
+    .action-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .action-row:last-child { border-bottom: none; }
+
+    .action-row label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+      width: 100%;
+    }
+
+    .action-row input[type="text"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: var(--font);
+      padding: 7px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 220px;
+    }
+
+    .action-row input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--border);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239,68,68,0.1);
+    }
+
+    /* ── Status / Error ── */
+    .error { color: var(--danger); margin-top: 8px; font-size: 13px; }
+
+    .status {
+      margin-left: 12px;
+      color: var(--muted);
       font-size: 13px;
     }
 
-    thead tr {
-      background: #f3f4f6;
-      border-bottom: 1px solid var(--color-border);
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    /* ── Warning ── */
+    .warning {
+      background: #3f2d0a;
+      border: 1px solid var(--warning);
+      color: #fde68a;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .card label {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .card input[type="text"],
+    .card input[type="password"],
+    .card select {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 14px;
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .card input:focus,
+    .card select:focus {
+      border-color: var(--accent);
+    }
+
+    .card select option {
+      background: var(--surface-2);
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
     th {
       text-align: left;
-      padding: 10px 14px;
-      font-size: 12px;
       font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: .04em;
-      color: var(--color-muted);
+      letter-spacing: 0.04em;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
     }
-
-    tbody tr {
-      border-bottom: 1px solid var(--color-border);
-      transition: background .1s;
-    }
-
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #f9fafb; }
 
     td {
-      padding: 10px 14px;
-      color: var(--color-text-light);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text);
       vertical-align: middle;
     }
 
+    tr:hover td { background: var(--surface-2); }
+
+    #history-table,
+    #users-table {
+      margin-top: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    #history-table td:nth-child(3),
+    #history-table th:nth-child(3) {
+      max-width: 320px;
+    }
+
+    td .truncate {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 300px;
+      display: block;
+    }
+
+    /* ── History badge ── */
     .badge {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 2px 10px;
       border-radius: 20px;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
-      letter-spacing: .03em;
     }
 
-    .badge-admin {
-      background: #ede9fe;
-      color: #5b21b6;
+    .badge-success {
+      background: rgba(16,185,129,0.15);
+      color: var(--success);
     }
 
-    .badge-user {
-      background: #dcfce7;
-      color: #166534;
+    .badge-muted {
+      background: var(--surface-2);
+      color: var(--muted);
     }
 
-    /* ── Warning banner ────────────────────────────────── */
-    .warning {
-      background: var(--color-warning-bg);
-      border: 1px solid var(--color-warning-border);
-      border-radius: var(--radius);
-      padding: 10px 14px;
-      font-size: 13px;
-      color: #92400e;
-      margin-bottom: 20px;
-      line-height: 1.55;
-    }
-
-    /* ── Responsive ────────────────────────────────────── */
-    @media (max-width: 720px) {
-      .layout {
+    /* ── Responsive ── */
+    @media (max-width: 719px) {
+      #view-app {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
       }
 
       .sidebar {
-        position: static;
+        position: relative;
         height: auto;
-        padding: 8px 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sidebar-logo {
+        padding: 14px 16px;
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+        font-size: 15px;
       }
 
       .sidebar nav {
         flex-direction: row;
-        overflow-x: auto;
+        padding: 8px 12px;
+        align-items: center;
+        flex: 1;
         gap: 4px;
-        padding: 0 8px;
       }
 
-      .sidebar nav a {
-        white-space: nowrap;
-        padding: 7px 12px;
-        font-size: 13px;
+      .sidebar-bottom {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        padding: 8px 12px;
+        border-top: 1px solid var(--border);
+        gap: 8px;
       }
 
-      .content {
-        padding: 18px 16px;
-      }
+      #user-chip { flex: 1; }
+      #signout-btn { width: auto; }
 
-      .metrics-row {
-        gap: 12px;
-      }
-
-      .inline-form .form-row {
-        flex-direction: column;
-      }
-
-      .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 28px 20px;
-      }
-
-      .topbar-title { font-size: 14px; }
+      .main { padding: 20px 16px; }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 </head>
 <body>
 
-  <!-- ── Login ─────────────────────────────────────────── -->
-  <section id="view-login" role="main" aria-label="Login">
+  <!-- ════════════════════════════════════════
+       LOGIN VIEW
+  ═════════════════════════════════════════ -->
+  <section id="view-login">
     <div class="login-card">
-      <h1 class="login-title">Organization Management</h1>
-      <p class="login-subtitle">Sign in to continue</p>
-      <form id="login-form" novalidate aria-label="Sign in form">
-        <div class="form-group">
-          <label for="login-username">Username</label>
-          <input
-            type="text"
-            id="login-username"
-            name="username"
-            autocomplete="username"
-            required
-            aria-required="true"
-            placeholder="Enter username"
-          />
-        </div>
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <input
-            type="password"
-            id="login-password"
-            name="password"
-            autocomplete="current-password"
-            required
-            aria-required="true"
-            placeholder="Enter password"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary btn-full">Sign in</button>
-        <div id="login-error" class="error-msg" role="alert" aria-live="assertive"></div>
+      <div class="login-title">AI Website Generator</div>
+      <div class="login-subtitle">Sign in to continue</div>
+      <form id="login-form" autocomplete="on">
+        <label>
+          Username
+          <input type="text" name="username" autocomplete="username" required spellcheck="false">
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="btn btn-primary" style="margin-top:4px;">Sign in</button>
+        <div id="login-error" class="error"></div>
       </form>
     </div>
   </section>
 
-  <!-- ── Dashboard ─────────────────────────────────────── -->
-  <section id="view-dashboard" style="display:none" aria-label="Dashboard">
-    <header class="topbar" role="banner">
-      <span class="topbar-title">Organization Management</span>
-      <div class="topbar-right">
-        <span id="user-chip" aria-label="Signed in user" role="status"></span>
-        <button id="signout-btn" class="btn btn-secondary btn-sm" type="button">Sign out</button>
-      </div>
-    </header>
-    <div class="layout">
-      <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
-        <nav aria-label="Main navigation">
-          <a href="#dashboard" aria-current="page">Dashboard</a>
-          <a href="#organizations">Organizations</a>
-          <a href="#admin" id="admin-link" style="display:none">Admin</a>
-        </nav>
-      </aside>
-      <main class="content" role="main">
-        <div class="metrics-row" role="list" aria-label="Key metrics">
-          <div class="metric" role="listitem">
-            <span class="metric-label">Total organizations</span>
-            <span id="m-orgs" class="metric-value" aria-live="polite">0</span>
-          </div>
-          <div class="metric" role="listitem">
-            <span class="metric-label">Total users</span>
-            <span id="m-users" class="metric-value" aria-live="polite">0</span>
-          </div>
-          <div class="metric" role="listitem">
-            <span class="metric-label">Active sessions</span>
-            <span id="m-sessions" class="metric-value" aria-live="polite">0</span>
-          </div>
-        </div>
-        <div class="panel">
-          <h2>Welcome</h2>
-          <p>Manage organizations and users from a single dashboard. Use the sidebar to navigate.</p>
-        </div>
-      </main>
-    </div>
-  </section>
+  <!-- ════════════════════════════════════════
+       APP VIEW
+  ═════════════════════════════════════════ -->
+  <section id="view-app" style="display:none;">
 
-  <!-- ── Organizations ─────────────────────────────────── -->
-  <section id="view-organizations" style="display:none" aria-label="Organizations">
-    <header class="topbar" role="banner">
-      <span class="topbar-title">Organization Management</span>
-      <div class="topbar-right">
-        <span class="user-chip" id="user-chip-orgs" aria-label="Signed in user" role="status"></span>
-        <button class="signout-btn btn btn-secondary btn-sm" type="button">Sign out</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span><span class="logo-accent">AI</span> Site Gen</span>
       </div>
-    </header>
-    <div class="layout">
-      <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
-        <nav aria-label="Main navigation">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#organizations" aria-current="page">Organizations</a>
-          <a href="#admin" class="admin-link" style="display:none">Admin</a>
-        </nav>
-      </aside>
-      <main class="content" role="main">
-        <div class="section-header">
-          <h2>Organizations</h2>
-          <button id="add-org-btn" class="btn btn-primary" type="button">Add organization</button>
+      <nav>
+        <a href="#generate" data-nav="generate">Generate</a>
+        <a href="#history" data-nav="history">History</a>
+        <a href="#admin" data-nav="admin" id="admin-link" style="display:none;">Admin</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div id="user-chip"></div>
+        <button id="signout-btn" class="btn">Sign out</button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- ── Generate Panel ── -->
+      <div id="panel-generate" class="panel" style="display:none;">
+        <h1>Generate a website</h1>
+        <p class="muted">Describe what you want to build. The AI will choose the best structure.</p>
+
+        <div id="gen-guard-user" class="guard" style="display:none;">
+          Only administrators can generate sites. Ask an admin for access.
         </div>
 
-        <form id="add-org-form" class="inline-form" style="display:none" aria-label="Add organization form" novalidate>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="org-name">Name</label>
-              <input
-                type="text"
-                id="org-name"
-                name="name"
-                required
-                aria-required="true"
-                placeholder="Organization name"
-              />
-            </div>
-            <div class="form-group">
-              <label for="org-industry">Industry</label>
-              <select id="org-industry" name="industry" required aria-required="true">
-                <option value="">Select industry</option>
-                <option value="Technology">Technology</option>
-                <option value="Finance">Finance</option>
-                <option value="Manufacturing">Manufacturing</option>
-                <option value="Retail">Retail</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="org-employees">Employees</label>
-              <input
-                type="number"
-                id="org-employees"
-                name="employees"
-                min="1"
-                placeholder="Number of employees"
-              />
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Save organization</button>
-            <button type="button" id="add-org-cancel" class="btn btn-secondary">Cancel</button>
+        <form id="gen-form" style="display:none;">
+          <label for="gen-prompt">Prompt</label>
+          <textarea
+            id="gen-prompt"
+            name="prompt"
+            rows="6"
+            placeholder="e.g. Landing page for a coffee shop with menu and reservation form"
+            required
+          ></textarea>
+          <div class="gen-actions">
+            <button type="submit" class="btn btn-primary" id="gen-submit">Generate</button>
+            <span id="gen-status" class="status"></span>
           </div>
         </form>
 
-        <div class="table-wrap">
-          <table id="orgs-table" aria-label="Organizations table">
-            <thead>
-              <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Industry</th>
-                <th scope="col">Employees</th>
-                <th scope="col">Created</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </main>
-    </div>
-  </section>
+        <div id="gen-result" style="display:none;">
+          <div class="tabs">
+            <button data-tab="preview" class="tab active">Preview</button>
+            <button data-tab="code" class="tab">Code</button>
+            <button data-tab="actions" class="tab">Actions</button>
+          </div>
 
-  <!-- ── Admin ─────────────────────────────────────────── -->
-  <section id="view-admin" style="display:none" aria-label="Admin — User management">
-    <header class="topbar" role="banner">
-      <span class="topbar-title">Organization Management</span>
-      <div class="topbar-right">
-        <span class="user-chip" id="user-chip-admin" aria-label="Signed in user" role="status"></span>
-        <button class="signout-btn btn btn-secondary btn-sm" type="button">Sign out</button>
+          <!-- Preview tab -->
+          <div class="tab-content" id="tab-preview">
+            <iframe
+              id="preview-frame"
+              sandbox="allow-scripts"
+              title="Preview"
+            ></iframe>
+          </div>
+
+          <!-- Code tab -->
+          <div class="tab-content" id="tab-code" style="display:none;">
+            <div class="file-tabs" id="file-tabs"></div>
+            <pre><code id="code-view"></code></pre>
+          </div>
+
+          <!-- Actions tab -->
+          <div class="tab-content" id="tab-actions" style="display:none;">
+            <div class="action-row">
+              <button id="download-zip-btn" class="btn">Download ZIP</button>
+              <span class="muted">Save all files as a ZIP archive.</span>
+            </div>
+            <div class="action-row">
+              <label for="publish-slug">Slug (lowercase letters, digits, hyphens):</label>
+              <input
+                type="text"
+                id="publish-slug"
+                placeholder="my-coffee-shop"
+                pattern="[a-z0-9-]+"
+                spellcheck="false"
+              >
+              <button id="publish-btn" class="btn btn-primary">Publish</button>
+              <span id="publish-status" class="status"></span>
+            </div>
+          </div>
+        </div>
       </div>
-    </header>
-    <div class="layout">
-      <aside class="sidebar" role="complementary" aria-label="Sidebar navigation">
-        <nav aria-label="Main navigation">
-          <a href="#dashboard">Dashboard</a>
-          <a href="#organizations">Organizations</a>
-          <a href="#admin" class="admin-link" aria-current="page" style="display:none">Admin</a>
-        </nav>
-      </aside>
-      <main class="content" role="main">
-        <div class="section-header">
-          <h2>User management</h2>
-        </div>
 
-        <div class="warning" role="note" aria-label="Security notice">
+      <!-- ── History Panel ── -->
+      <div id="panel-history" class="panel" style="display:none;">
+        <h1>History</h1>
+        <div id="history-guard-empty" class="muted" style="margin-top:16px;">No generations yet.</div>
+        <table id="history-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>User</th>
+              <th>Prompt</th>
+              <th>Published</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- ── Admin Panel ── -->
+      <div id="panel-admin" class="panel" style="display:none;">
+        <h1>User management</h1>
+
+        <div class="warning">
           Changes here are committed to the public repo. This is a demo-grade auth system — do not use in production.
         </div>
 
-        <div class="panel" style="margin-bottom:24px">
-          <h2 style="margin-bottom:14px">Create user</h2>
-          <form id="add-user-form" aria-label="Create user form" novalidate>
-            <div class="form-row" style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end">
-              <div class="form-group" style="flex:1 1 160px;margin-bottom:0">
-                <label for="new-username">Username</label>
-                <input
-                  type="text"
-                  id="new-username"
-                  name="username"
-                  autocomplete="off"
-                  required
-                  aria-required="true"
-                  placeholder="Enter username"
-                />
-              </div>
-              <div class="form-group" style="flex:1 1 160px;margin-bottom:0">
-                <label for="new-password">Password</label>
-                <input
-                  type="password"
-                  id="new-password"
-                  name="password"
-                  autocomplete="new-password"
-                  required
-                  aria-required="true"
-                  placeholder="Enter password"
-                />
-              </div>
-              <div class="form-group" style="flex:1 1 130px;margin-bottom:0">
-                <label for="new-role">Role</label>
-                <select id="new-role" name="role" required aria-required="true">
-                  <option value="user">user</option>
-                  <option value="admin">admin</option>
-                </select>
-              </div>
-              <div style="flex:0 0 auto;margin-bottom:0">
-                <button type="submit" class="btn btn-primary">Create user</button>
-              </div>
-            </div>
-          </form>
-          <div id="admin-status" class="status-msg" role="status" aria-live="polite"></div>
-        </div>
+        <form id="add-user-form" class="card">
+          <h3>Create user</h3>
+          <label>
+            Username
+            <input name="username" type="text" required autocomplete="off" spellcheck="false">
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" required autocomplete="new-password">
+          </label>
+          <label>
+            Role
+            <select name="role">
+              <option value="user">user</option>
+              <option value="admin">admin</option>
+            </select>
+          </label>
+          <div style="display:flex;align-items:center;gap:0;">
+            <button type="submit" class="btn btn-primary">Create user</button>
+            <div id="admin-status" class="status"></div>
+          </div>
+        </form>
 
-        <div class="table-wrap">
-          <table id="users-table" aria-label="Users table">
-            <thead>
-              <tr>
-                <th scope="col">Username</th>
-                <th scope="col">Role</th>
-                <th scope="col">Created</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </main>
-    </div>
+        <table id="users-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+    </main>
   </section>
 
-  <!-- ── Script placeholders ───────────────────────────── -->
+  <!-- ════════════════════════════════════════
+       Script placeholders
+  ═════════════════════════════════════════ -->
   <script id="app-core">
 
 (function(){
-  const WEBHOOK_URL = 'https://build.twin.so/triggers/1811eb43-8aad-4395-b889-32006bdb869e/webhook';
+  const WEBHOOK_DB_UPLOAD = "https://build.twin.so/triggers/1811eb43-8aad-4395-b889-32006bdb869e/webhook";
+  const WEBHOOK_GENERATE  = "https://build.twin.so/triggers/b4e1c04c-08b3-4b69-9ff2-622542871a6a/webhook";
+  const WEBHOOK_PUBLISH   = "https://build.twin.so/triggers/c1f3389a-6101-4347-bc72-608c3e70a875/webhook";
   const SQL_WASM_URL = 'https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.wasm';
+  const BASE_PATH = '/twin-web-generator';
 
   const SEED_SQL = [
     "CREATE TABLE users (username TEXT PRIMARY KEY, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','user')), created_at TEXT DEFAULT (datetime('now')));",
-    "CREATE TABLE organizations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, industry TEXT, employees INTEGER, created_at TEXT DEFAULT (datetime('now')));",
-    "INSERT INTO users (username, password_hash, role) VALUES ('wilson', '$2a$10$j5URFlebAA/qxzJeBRU2GuCrjs6q2m3bsheaW0lAlXmaEu8.ZCPzu', 'admin');",
-    "INSERT INTO organizations (name, industry, employees) VALUES ('Acme Corp', 'Technology', 120);",
-    "INSERT INTO organizations (name, industry, employees) VALUES ('Globex', 'Finance', 85);",
-    "INSERT INTO organizations (name, industry, employees) VALUES ('Initech', 'Manufacturing', 310);"
+    "CREATE TABLE generations (id TEXT PRIMARY KEY, username TEXT, prompt TEXT, files_json TEXT, published_slug TEXT, created_at TEXT DEFAULT (datetime('now')));",
+    "INSERT INTO users (username, password_hash, role) VALUES ('wilson', '$2a$10$j5URFlebAA/qxzJeBRU2GuCrjs6q2m3bsheaW0lAlXmaEu8.ZCPzu', 'admin');"
+  ].join('\n');
+
+  const MIGRATE_SQL = [
+    "CREATE TABLE IF NOT EXISTS generations (id TEXT PRIMARY KEY, username TEXT, prompt TEXT, files_json TEXT, published_slug TEXT, created_at TEXT DEFAULT (datetime('now')));"
   ].join('\n');
 
   window.App = {
-    db: null,
-    SQL: null,
-    session: null,
-    WEBHOOK_URL,
-    SEED_SQL,
+    db: null, SQL: null, session: null,
+    WEBHOOK_DB_UPLOAD, WEBHOOK_GENERATE, WEBHOOK_PUBLISH, BASE_PATH,
+
     u8ToB64(u8) {
-      let s = '';
-      const chunk = 0x8000;
+      let s = ''; const chunk = 0x8000;
       for (let i=0; i<u8.length; i+=chunk) s += String.fromCharCode.apply(null, u8.subarray(i, i+chunk));
       return btoa(s);
     },
-    exportDb() {
-      const bytes = window.App.db.export();
-      return window.App.u8ToB64(bytes);
+    b64ToU8(b64) {
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i=0; i<bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    },
+    exportDb() { return window.App.u8ToB64(window.App.db.export()); },
+    async postWebhook(url, payload) {
+      const body = JSON.stringify(payload);
+      try {
+        const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body });
+        if (res.ok) return res.json().catch(()=>({}));
+      } catch(e){}
+      await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body });
+      return { queued: true };
     },
     async pushDb() {
       const b64 = window.App.exportDb();
-      const body = JSON.stringify({ db_base64: b64 });
-      try {
-        const res = await fetch(WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-        if (res.ok) return res.json().catch(()=>({}));
-        // Fall through to no-cors
-      } catch(e) { /* likely CORS */ }
-      // Fallback: opaque POST (we cannot read response but the request is sent)
-      await fetch(WEBHOOK_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body });
-      return { queued: true };
+      return window.App.postWebhook(WEBHOOK_DB_UPLOAD, { db_base64: b64 });
     },
     loadSession() {
       try { window.App.session = JSON.parse(localStorage.getItem('session') || 'null'); }
@@ -787,69 +870,77 @@
     async boot() {
       const SQL = await initSqlJs({ locateFile: () => SQL_WASM_URL });
       window.App.SQL = SQL;
+      let loaded = false;
       try {
-        const res = await fetch('./db.sqlite', { cache: 'no-cache' });
+        const res = await fetch('./db.sqlite?t=' + Date.now(), { cache:'no-cache' });
         if (res.ok) {
           const buf = new Uint8Array(await res.arrayBuffer());
-          if (buf.length > 0) {
+          if (buf.length > 100) {
             window.App.db = new SQL.Database(buf);
-          } else window.App.seed();
-        } else {
-          window.App.seed();
+            // migrate: ensure generations table exists
+            try { window.App.db.exec(MIGRATE_SQL); } catch(e){ console.warn('migrate warn', e); }
+            loaded = true;
+          }
         }
-      } catch(e) {
-        window.App.seed();
-      }
+      } catch(e) { console.warn('db fetch err', e); }
+      if (!loaded) window.App.seed();
       window.App.loadSession();
       window.App.router();
     }
   };
+
   document.addEventListener('DOMContentLoaded', () => { window.App.boot(); });
 })();
 
 </script>
-  <script id="app-routes">
+  <script id="app-router">
 
 (function(){
-  const VIEWS = ['login','dashboard','organizations','admin'];
-  function show(name) {
-    VIEWS.forEach(v => {
-      const el = document.getElementById('view-' + v);
+  const NAVS = ['generate','history','admin'];
+  function showView(id) {
+    ['view-login','view-app'].forEach(v => {
+      const el = document.getElementById(v);
+      if (el) el.style.display = (v === id) ? '' : 'none';
+    });
+  }
+  function showPanel(name) {
+    NAVS.forEach(v => {
+      const el = document.getElementById('panel-' + v);
       if (el) el.style.display = (v === name) ? '' : 'none';
     });
-    // Update sidebar active state
-    document.querySelectorAll('.sidebar a').forEach(a => {
-      const href = a.getAttribute('href') || '';
-      a.classList.toggle('active', href === '#' + name);
+    document.querySelectorAll('[data-nav]').forEach(a => {
+      a.classList.toggle('active', a.getAttribute('data-nav') === name);
     });
   }
   function router() {
-    const hash = (location.hash || '#login').replace(/^#/, '');
     const s = window.App.session;
-    if (!s) { show('login'); return; }
-    // Authenticated: update chip and sidebar
+    if (!s) { showView('view-login'); return; }
+    showView('view-app');
+    // top-bar chip + admin link
     const chip = document.getElementById('user-chip');
-    if (chip) chip.textContent = s.username + ' (' + s.role + ')';
+    if (chip) chip.textContent = s.username + ' · ' + s.role;
     const adminLink = document.getElementById('admin-link');
     if (adminLink) adminLink.style.display = (s.role === 'admin') ? '' : 'none';
-    let target = hash;
-    if (target === 'login' || !VIEWS.includes(target)) target = 'dashboard';
-    if (target === 'admin' && s.role !== 'admin') target = 'dashboard';
-    show(target);
-    if (target === 'dashboard') window.AppViews.renderDashboard();
-    else if (target === 'organizations') window.AppViews.renderOrganizations();
-    else if (target === 'admin') window.AppViews.renderAdmin();
+
+    let target = (location.hash || '#generate').replace(/^#/,'');
+    if (!NAVS.includes(target)) target = 'generate';
+    if (target === 'admin' && s.role !== 'admin') target = 'generate';
+    showPanel(target);
+    if (target === 'generate') window.AppGen && window.AppGen.renderGenerate();
+    else if (target === 'history') window.AppGen && window.AppGen.renderHistory();
+    else if (target === 'admin') window.AppAdmin && window.AppAdmin.renderAdmin();
   }
   window.App.router = router;
   window.addEventListener('hashchange', router);
 })();
 
 </script>
-  <script id="app-views">
+  <script id="app-auth-admin">
 
 (function(){
-  function q(sel, root) { return (root || document).querySelector(sel); }
-  function all(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
+  function q(sel, root){ return (root||document).querySelector(sel); }
+  function all(sel, root){ return Array.from((root||document).querySelectorAll(sel)); }
+  function escHTML(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function exec(sql, params) {
     const stmt = window.App.db.prepare(sql);
     if (params) stmt.bind(params);
@@ -865,57 +956,41 @@
     stmt.free();
   }
 
-  function escHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-  const AppViews = {
-    renderDashboard() {
-      const orgs = exec('SELECT COUNT(*) AS c FROM organizations')[0].c;
-      const users = exec('SELECT COUNT(*) AS c FROM users')[0].c;
-      const mo = q('#m-orgs'); if (mo) mo.textContent = orgs;
-      const mu = q('#m-users'); if (mu) mu.textContent = users;
-      const ms = q('#m-sessions'); if (ms) ms.textContent = '1';
-    },
-    renderOrganizations() {
-      const rows = exec('SELECT id, name, industry, employees, created_at FROM organizations ORDER BY id DESC');
-      const tbody = q('#orgs-table tbody');
-      if (!tbody) return;
-      tbody.innerHTML = rows.map(r =>
-        '<tr><td>' + escHTML(r.name) + '</td><td>' + escHTML(r.industry) + '</td><td>' + escHTML(r.employees) + '</td><td>' + escHTML(r.created_at) + '</td></tr>'
-      ).join('');
-    },
+  const AppAdmin = {
     renderAdmin() {
+      if (!window.App.session || window.App.session.role !== 'admin') { location.hash = '#generate'; return; }
       const rows = exec('SELECT username, role, created_at FROM users ORDER BY username');
       const tbody = q('#users-table tbody');
       if (!tbody) return;
       const me = window.App.session.username;
       tbody.innerHTML = rows.map(r => {
         const disabled = r.username === me ? 'disabled title="Cannot delete your own account"' : '';
-        return '<tr><td>' + escHTML(r.username) + '</td><td>' + escHTML(r.role) + '</td><td>' + escHTML(r.created_at) + '</td><td><button class="btn-danger delete-user-btn" data-username="' + escHTML(r.username) + '" ' + disabled + '>Delete</button></td></tr>';
+        return '<tr><td>'+escHTML(r.username)+'</td><td>'+escHTML(r.role)+'</td><td>'+escHTML(r.created_at)+'</td><td><button class="btn btn-danger delete-user-btn" data-username="'+escHTML(r.username)+'" '+disabled+'>Delete</button></td></tr>';
       }).join('');
       all('.delete-user-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const u = btn.getAttribute('data-username');
-          if (!confirm('Delete user ' + u + '?')) return;
+          if (!confirm('Delete user '+u+'?')) return;
           run('DELETE FROM users WHERE username = ?', [u]);
-          await AppViews.pushAndRefresh('User ' + u + ' deleted.');
+          await AppAdmin.pushAndRefresh('User '+u+' deleted.');
         });
       });
     },
     async pushAndRefresh(okMsg) {
       const status = q('#admin-status');
-      if (status) { status.textContent = 'Saving...'; status.className = 'status-msg status-pending'; }
+      if (status) { status.textContent = 'Saving…'; status.className = 'status'; }
       try {
         await window.App.pushDb();
-        if (status) { status.textContent = okMsg + ' Site will refresh in ~60s.'; status.className = 'status-msg status-success'; }
-        AppViews.renderAdmin();
+        if (status) { status.textContent = okMsg + ' Site will refresh in ~60s.'; status.className = 'status success'; }
+        AppAdmin.renderAdmin();
       } catch(e) {
-        if (status) { status.textContent = 'Error: ' + e.message; status.className = 'status-msg status-error'; }
+        if (status) { status.textContent = 'Error: '+e.message; status.className = 'status error'; }
       }
     }
   };
-  window.AppViews = AppViews;
+  window.AppAdmin = AppAdmin;
 
-  // LOGIN form
+  // Login
   document.addEventListener('submit', (e) => {
     if (e.target && e.target.id === 'login-form') {
       e.preventDefault();
@@ -928,54 +1003,253 @@
       const ok = dcodeIO.bcrypt.compareSync(p, row.password_hash);
       if (!ok) { err.textContent = 'Invalid credentials'; return; }
       window.App.saveSession({ username: u, role: row.role });
-      location.hash = '#dashboard';
+      location.hash = '#generate';
       window.App.router();
-    }
-    if (e.target && e.target.id === 'add-org-form') {
-      e.preventDefault();
-      const name = q('input[name=name]', e.target).value.trim();
-      const industry = q('select[name=industry]', e.target).value;
-      const employees = parseInt(q('input[name=employees]', e.target).value, 10) || 0;
-      if (!name) return;
-      run('INSERT INTO organizations (name, industry, employees) VALUES (?, ?, ?)', [name, industry, employees]);
-      e.target.reset();
-      e.target.style.display = 'none';
-      AppViews.renderOrganizations();
-      AppViews.renderDashboard();
     }
     if (e.target && e.target.id === 'add-user-form') {
       e.preventDefault();
+      if (!window.App.session || window.App.session.role !== 'admin') return;
       const u = q('input[name=username]', e.target).value.trim();
       const p = q('input[name=password]', e.target).value;
       const role = q('select[name=role]', e.target).value;
       const status = q('#admin-status');
-      if (!u || !p) { if (status) { status.textContent = 'Username and password are required.'; status.className = 'status-msg status-error'; } return; }
+      if (!u || !p) { status.textContent='Username and password are required.'; status.className='status error'; return; }
       const existing = exec('SELECT 1 FROM users WHERE username = ?', [u])[0];
-      if (existing) { if (status) { status.textContent = 'Username already exists.'; status.className = 'status-msg status-error'; } return; }
+      if (existing) { status.textContent='Username already exists.'; status.className='status error'; return; }
       const hash = dcodeIO.bcrypt.hashSync(p, 10);
       run('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [u, hash, role]);
       e.target.reset();
-      AppViews.pushAndRefresh('User ' + u + ' created.');
+      AppAdmin.pushAndRefresh('User '+u+' created.');
     }
   });
 
+  // Signout
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'signout-btn') {
       window.App.saveSession(null);
       location.hash = '#login';
       window.App.router();
     }
-    if (e.target && e.target.id === 'add-org-btn') {
-      const f = q('#add-org-form');
-      if (f) f.style.display = f.style.display === 'none' ? '' : 'none';
-    }
-    if (e.target && e.target.id === 'cancel-org-btn') {
-      const f = q('#add-org-form');
-      if (f) { f.style.display = 'none'; f.reset(); }
-    }
   });
 })();
 
 </script>
+  <script id="app-generator">
+
+(function(){
+  function q(sel, root){ return (root||document).querySelector(sel); }
+  function all(sel, root){ return Array.from((root||document).querySelectorAll(sel)); }
+  function escHTML(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function exec(sql, params) {
+    const stmt = window.App.db.prepare(sql);
+    if (params) stmt.bind(params);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return rows;
+  }
+  function run(sql, params) {
+    const stmt = window.App.db.prepare(sql);
+    if (params) stmt.bind(params);
+    stmt.step();
+    stmt.free();
+  }
+  function uuid() {
+    // RFC4122 v4 fallback
+    if (crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random()*16|0; const v = c==='x'?r:(r&0x3|0x8); return v.toString(16);
+    });
+  }
+  function slugify(s) {
+    return String(s||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-').slice(0,48) || 'site';
+  }
+
+  let currentResult = null; // { id, prompt, files:[{path,content}] }
+  let currentTab = 'preview';
+  let currentFileIdx = 0;
+
+  const AppGen = {
+    renderGenerate() {
+      const s = window.App.session;
+      const guard = q('#gen-guard-user');
+      const form = q('#gen-form');
+      const result = q('#gen-result');
+      if (s.role === 'admin') {
+        guard.style.display = 'none';
+        form.style.display = '';
+      } else {
+        guard.style.display = '';
+        form.style.display = 'none';
+        if (result) result.style.display = 'none';
+      }
+    },
+    renderHistory() {
+      const s = window.App.session;
+      let rows;
+      if (s.role === 'admin') rows = exec('SELECT id, username, prompt, published_slug, created_at FROM generations ORDER BY created_at DESC');
+      else rows = exec('SELECT id, username, prompt, published_slug, created_at FROM generations WHERE username = ? ORDER BY created_at DESC', [s.username]);
+      const empty = q('#history-guard-empty');
+      const tbody = q('#history-table tbody');
+      if (!tbody) return;
+      if (rows.length === 0) { empty.style.display=''; q('#history-table').style.display='none'; return; }
+      empty.style.display = 'none';
+      q('#history-table').style.display = '';
+      tbody.innerHTML = rows.map(r => {
+        const pub = r.published_slug ? ('<a href="./sites/'+escHTML(r.published_slug)+'/" target="_blank">'+escHTML(r.published_slug)+'</a>') : '<span class="muted">—</span>';
+        return '<tr><td>'+escHTML(r.created_at)+'</td><td>'+escHTML(r.username)+'</td><td class="truncate">'+escHTML((r.prompt||'').slice(0,80))+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Open</button></td></tr>';
+      }).join('');
+      all('.history-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const row = exec('SELECT id, prompt, files_json, published_slug FROM generations WHERE id = ?', [id])[0];
+          if (!row) return;
+          let files;
+          try { files = JSON.parse(row.files_json); } catch(e) { files = [{path:'index.html', content: row.files_json || ''}]; }
+          currentResult = { id: row.id, prompt: row.prompt, files, published_slug: row.published_slug };
+          location.hash = '#generate';
+          setTimeout(() => AppGen.showResult(), 20);
+        });
+      });
+    },
+    showResult() {
+      if (window.App.session.role !== 'admin') { AppGen.renderGenerate(); return; }
+      const result = q('#gen-result');
+      if (!currentResult) { result.style.display='none'; return; }
+      result.style.display = '';
+      // Render file tabs
+      const ft = q('#file-tabs');
+      ft.innerHTML = currentResult.files.map((f, i) =>
+        '<button class="tab file-tab'+(i===currentFileIdx?' active':'')+'" data-file-idx="'+i+'">'+escHTML(f.path)+'</button>'
+      ).join('');
+      all('.file-tab').forEach(b => b.addEventListener('click', () => {
+        currentFileIdx = parseInt(b.getAttribute('data-file-idx'), 10) || 0;
+        AppGen.showResult();
+      }));
+      // Preview (always index.html if exists, else first)
+      const indexFile = currentResult.files.find(f => /index\.html?$/i.test(f.path)) || currentResult.files[0];
+      const previewFrame = q('#preview-frame');
+      if (currentResult.files.length === 1) {
+        previewFrame.srcdoc = indexFile.content;
+      } else {
+        // Inline assets via data URIs for multi-file preview
+        let html = indexFile.content;
+        currentResult.files.forEach(f => {
+          if (f === indexFile) return;
+          // naive replace of relative paths with data URIs
+          const ext = (f.path.split('.').pop()||'').toLowerCase();
+          const mime = ext==='css'?'text/css':ext==='js'?'application/javascript':ext==='svg'?'image/svg+xml':'text/plain';
+          const dataUri = 'data:'+mime+';base64,'+btoa(unescape(encodeURIComponent(f.content)));
+          const p = f.path.replace(/^\.?\//,'');
+          html = html.split('"'+p+'"').join('"'+dataUri+'"').split("'"+p+"'").join("'"+dataUri+"'");
+        });
+        previewFrame.srcdoc = html;
+      }
+      // Code view
+      const codeFile = currentResult.files[currentFileIdx] || indexFile;
+      q('#code-view').textContent = codeFile.content;
+      // Tabs
+      all('.tabs .tab[data-tab]').forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === currentTab));
+      ['preview','code','actions'].forEach(n => {
+        const el = q('#tab-' + n);
+        if (el) el.style.display = (n === currentTab) ? '' : 'none';
+      });
+      // Prefill slug if none set
+      const slugInput = q('#publish-slug');
+      if (slugInput && !slugInput.value) slugInput.value = slugify(currentResult.prompt);
+      const pubStatus = q('#publish-status');
+      if (pubStatus) {
+        if (currentResult.published_slug) { pubStatus.textContent = 'Already published at /sites/'+currentResult.published_slug+'/'; pubStatus.className='status success'; }
+        else { pubStatus.textContent=''; pubStatus.className='status'; }
+      }
+    },
+    async generate(prompt) {
+      const id = uuid();
+      const username = window.App.session.username;
+      const status = q('#gen-status');
+      status.textContent = 'Generating… (30-90s)'; status.className = 'status';
+      // Fire webhook
+      await window.App.postWebhook(window.App.WEBHOOK_GENERATE, { job_id: id, prompt, username, mode: 'auto' });
+      // Poll drafts/{id}.json
+      const start = Date.now();
+      const maxMs = 180000;
+      let resultData = null;
+      while (Date.now() - start < maxMs) {
+        await new Promise(r => setTimeout(r, 5000));
+        const elapsed = Math.round((Date.now()-start)/1000);
+        status.textContent = 'Generating… ' + elapsed + 's';
+        try {
+          const res = await fetch('./drafts/'+id+'.json?t='+Date.now(), { cache: 'no-cache' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.files) { resultData = data; break; }
+            if (data && data.error) { throw new Error(data.error); }
+          }
+        } catch(e) { /* keep polling */ }
+      }
+      if (!resultData) { status.textContent = 'Timeout waiting for generation. Try again.'; status.className='status error'; return; }
+      // Save in history
+      run('INSERT INTO generations (id, username, prompt, files_json) VALUES (?, ?, ?, ?)',
+          [id, username, prompt, JSON.stringify(resultData.files)]);
+      await window.App.pushDb().catch(()=>{});
+      currentResult = { id, prompt, files: resultData.files, published_slug: null };
+      currentTab = 'preview'; currentFileIdx = 0;
+      status.textContent = 'Ready.'; status.className = 'status success';
+      AppGen.showResult();
+    },
+    async downloadZip() {
+      if (!currentResult) return;
+      const zip = new JSZip();
+      currentResult.files.forEach(f => zip.file(f.path.replace(/^\.?\//,''), f.content));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = (slugify(currentResult.prompt)||'site') + '.zip';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    },
+    async publish() {
+      if (!currentResult) return;
+      const slugRaw = q('#publish-slug').value.trim();
+      const slug = slugRaw.match(/^[a-z0-9-]+$/) ? slugRaw : slugify(slugRaw || currentResult.prompt);
+      const status = q('#publish-status');
+      status.textContent = 'Publishing…'; status.className = 'status';
+      const payload = { slug, files: currentResult.files, job_id: currentResult.id, username: window.App.session.username };
+      await window.App.postWebhook(window.App.WEBHOOK_PUBLISH, payload);
+      // Optimistically update DB; the commit will happen server-side
+      run('UPDATE generations SET published_slug = ? WHERE id = ?', [slug, currentResult.id]);
+      await window.App.pushDb().catch(()=>{});
+      currentResult.published_slug = slug;
+      status.innerHTML = 'Published. Site will be live at <a href="./sites/'+escHTML(slug)+'/" target="_blank">./sites/'+escHTML(slug)+'/</a> in ~60s.';
+      status.className = 'status success';
+    }
+  };
+  window.AppGen = AppGen;
+
+  // Form submission
+  document.addEventListener('submit', (e) => {
+    if (e.target && e.target.id === 'gen-form') {
+      e.preventDefault();
+      if (window.App.session.role !== 'admin') return;
+      const prompt = q('textarea[name=prompt]', e.target).value.trim();
+      if (!prompt) return;
+      AppGen.generate(prompt);
+    }
+  });
+
+  // Clicks: tabs, buttons
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.classList && t.classList.contains('tab') && t.hasAttribute('data-tab')) {
+      currentTab = t.getAttribute('data-tab');
+      AppGen.showResult();
+    }
+    if (t && t.id === 'download-zip-btn') AppGen.downloadZip();
+    if (t && t.id === 'publish-btn') AppGen.publish();
+  });
+})();
+
+</script>
+
 </body>
 </html>
