@@ -1,4 +1,22 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Generador de webs con IA</title><meta name="description" content="Crea webs conversando con la IA."><style>:root{--bg:#0b0b12;--surface:#13131c;--surface-2:#1a1a28;--border:#262637;--muted:#8b8ba8;--text:#e8e8f0;--accent:#8b5cf6;--accent-hover:#7c3aed;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--user-bubble:#3b2a68;--assistant-bubble:#1a1a28;--radius:8px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}html,body,#view-app{height:100vh;margin:0}section[id^="view-"]{display:none}#view-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 36px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.6)}.login-card h1{margin:0 0 6px;font-size:22px;font-weight:700}.login-card h1 span{color:var(--accent)}.login-card p{color:var(--muted);margin:0 0 24px}.login-card label{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:13px;color:var(--muted)}input,select,textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:9px 12px;font-family:var(--font);font-size:14px}textarea{resize:vertical}#view-app{display:grid;grid-template-columns:240px 1fr}.sidebar{background:#0a0a10;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;gap:20px}.logo{font-weight:700;font-size:18px;letter-spacing:-.02em}.logo span{color:var(--accent)}nav a{display:block;padding:10px 12px;color:var(--muted);text-decoration:none;border-radius:6px;font-size:14px}nav a.active,nav a:hover{background:var(--surface-2);color:var(--text)}.user-chip{padding:10px 12px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;margin-bottom:8px}.main{padding:24px 32px;overflow:auto}.panel{max-width:1400px}.panel-chat{display:flex;flex-direction:column;height:calc(100vh - 48px)}.project-meta{display:flex;gap:12px;align-items:center;margin-bottom:16px}.chip{background:var(--surface-2);padding:4px 10px;border-radius:999px;font-size:12px;color:var(--muted);font-family:monospace}.chat-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0}.chat-col,.preview-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}.chat-messages{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}.msg{padding:10px 14px;border-radius:10px;max-width:90%;font-size:14px;line-height:1.5;white-space:pre-wrap}.msg.user{background:var(--user-bubble);align-self:flex-end}.msg.assistant{background:var(--assistant-bubble);border:1px solid var(--border);align-self:flex-start}.msg.system{background:transparent;color:var(--muted);font-size:12px;align-self:center}.progress-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:4px 0;max-width:95%;align-self:flex-start;font-size:13px}.progress-card h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:600}.progress-step{display:flex;align-items:center;gap:10px;padding:4px 0;color:var(--muted)}.progress-step.done{color:var(--text)}.progress-step.active{color:var(--text)}.progress-step.error{color:var(--danger)}.progress-icon{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}.progress-icon.pending{color:var(--muted)}.progress-icon.active::before{content:"";width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.progress-step .label{flex:1}.progress-step .time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}.progress-total{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}.file-chips{padding:0 16px 8px;display:flex;flex-wrap:wrap;gap:6px}.file-chip{background:var(--surface-2);border:1px solid var(--border);padding:4px 8px;border-radius:6px;font-size:12px;display:flex;gap:6px;align-items:center}.file-chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0}.chat-form{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}.drop-zone{border:2px dashed var(--border);border-radius:6px;padding:10px;text-align:center;color:var(--muted);cursor:pointer;font-size:13px}.drop-zone.drag{border-color:var(--accent);background:var(--surface-2)}.chat-actions{display:flex;gap:12px;align-items:center}.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 8px}.tab{background:transparent;border:none;color:var(--muted);padding:10px 16px;cursor:pointer;font-size:13px}.tab.active{color:var(--text);border-bottom:2px solid var(--accent)}.tab-content{flex:1;overflow:auto;padding:16px}#preview-frame{width:100%;height:100%;min-height:500px;border:0;border-radius:6px;background:#fff}.file-list{display:flex;flex-direction:column;gap:4px}.file-item{padding:6px 8px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:13px;display:flex;justify-content:space-between}.file-item:hover{background:var(--surface-2)}.file-item .size{color:var(--muted);font-size:11px}.files-section h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}pre code{background:#0a0a10;padding:16px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px;color:#d4d4d8;display:block;white-space:pre}.file-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}.file-tabs .file-tab{background:var(--surface-2);border:1px solid var(--border);padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;color:var(--muted);font-family:monospace}.file-tabs .file-tab.active{color:var(--text);border-color:var(--accent)}.action-row{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}.btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font)}.btn:hover{background:var(--surface)}.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}.btn-ghost{background:transparent}.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}.status{margin-left:8px;color:var(--muted);font-size:13px}.status.success{color:var(--success)}.status.error{color:var(--danger)}.status.pending::before{content:"";display:inline-block;width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;vertical-align:-2px;margin-right:6px;animation:spin .8s linear infinite}.badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}.badge.pending{color:var(--warning);border-color:var(--warning)}.badge.synced{color:var(--success);border-color:var(--success)}.badge.error{color:var(--danger);border-color:var(--danger)}.warning{background:#3f2d0a;border:1px solid var(--warning);color:#fde68a;padding:12px 16px;border-radius:8px;margin-bottom:16px}.error{color:var(--danger);margin-top:8px}.guard{padding:40px;text-align:center;color:var(--muted);background:var(--surface);border-radius:8px;border:1px solid var(--border)}.card{background:var(--surface);border:1px solid var(--border);padding:20px;border-radius:8px;margin-bottom:20px;max-width:500px}.card label{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:13px;color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}tr:hover td{background:var(--surface-2)}@media(max-width:900px){#view-app{grid-template-columns:1fr}.chat-layout{grid-template-columns:1fr}.panel-chat{height:auto}}</style><script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script><script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script></head><body><section id="view-login"><div class="login-card"><h1>Generador de webs con <span>IA</span></h1><p>Inicia sesión para continuar</p><form id="login-form"><label>Usuario<input name="username" autocomplete="username" required></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Iniciar sesión</button></form><div id="login-error" class="error" role="alert"></div></div></section><section id="view-app"><aside class="sidebar"><div class="logo">Generador <span>IA</span></div><nav><a href="#generate" data-nav="generate">Generar</a><a href="#history" data-nav="history">Historial</a><a href="#admin" data-nav="admin" id="admin-link" style="display:none">Administración</a></nav><div style="margin-top:auto"><div id="user-chip" class="user-chip"></div><button id="signout-btn" class="btn btn-ghost">Cerrar sesión</button></div></aside><main class="main"><div id="panel-generate" class="panel panel-chat" style="display:none"><h1 id="project-title">Proyecto nuevo</h1><div class="project-meta"><span id="project-id-chip" class="chip">—</span><button id="new-project-btn" class="btn">Nuevo proyecto</button></div><div id="gen-guard-user" class="guard" style="display:none">Solo los administradores pueden generar sitios. Pide acceso a un administrador.</div><div class="chat-layout"><section class="chat-col"><div class="chat-messages" id="chat-messages" aria-live="polite"></div><div id="file-chips" class="file-chips"></div><form id="chat-form" class="chat-form"><label class="drop-zone" id="drop-zone"><input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg"><span>Arrastra archivos aquí o haz clic para subir</span></label><textarea id="chat-input" name="message" rows="3" placeholder="Describe la web que quieres generar. Por ejemplo: una landing oscura para una cafetería de especialidad con menú y reservas."></textarea><div class="chat-actions"><button type="submit" id="chat-send" class="btn btn-primary">Enviar</button><span id="gen-status" class="status"></span></div></form></section><section class="preview-col"><div class="tabs"><button data-tab="preview" class="tab active">Vista previa</button><button data-tab="files" class="tab">Archivos</button><button data-tab="code" class="tab">Código</button><button data-tab="actions" class="tab">Acciones</button></div><div class="tab-content" id="tab-preview"><iframe id="preview-frame" sandbox="allow-scripts" title="Vista previa"></iframe></div><div class="tab-content" id="tab-files" style="display:none"><div class="files-section"><h3>Archivos subidos</h3><div id="inputs-list" class="file-list muted">Todavía no has subido archivos.</div></div><div class="files-section"><h3>Archivos generados</h3><div id="outputs-list" class="file-list muted">Aún no se ha generado ningún archivo.</div></div></div><div class="tab-content" id="tab-code" style="display:none"><div id="code-file-tabs" class="file-tabs"></div><pre><code id="code-view"></code></pre></div><div class="tab-content" id="tab-actions" style="display:none"><div class="action-row"><button id="download-zip-btn" class="btn">Descargar ZIP</button><span class="muted">Solo archivos generados.</span></div><div class="action-row"><label>Slug de publicación <input type="text" id="publish-slug" placeholder="mi-sitio" pattern="[a-z0-9-]+"></label><button id="publish-btn" class="btn btn-primary">Publicar</button><span id="publish-status" class="status"></span></div></div></section></div></div><div id="panel-history" class="panel" style="display:none"><h1>Tus proyectos</h1><div id="history-empty" class="muted">Sin proyectos todavía. Crea uno desde Generar.</div><table id="history-table"><thead><tr><th>Título</th><th>Usuario</th><th>Actualizado</th><th>Mensajes</th><th>Publicado en</th><th></th></tr></thead><tbody></tbody></table></div><div id="panel-admin" class="panel" style="display:none"><h1>Administración</h1><div class="warning">Los cambios se confirman al repositorio público. Este es un sistema de autenticación de demostración — no lo uses en producción.</div><form id="add-user-form" class="card"><h3>Crear usuario</h3><label>Usuario<input name="username" type="text" required></label><label>Contraseña<input name="password" type="password" required></label><label>Rol<select name="role"><option value="user">usuario</option><option value="admin">admin</option></select></label><button type="submit" class="btn btn-primary">Crear</button><span id="admin-sync-badge" class="badge">Sin cambios</span><div id="admin-status" class="status" role="status"></div></form><table id="users-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></main></section><script id="app-core">
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Generador de webs con IA</title><meta name="description" content="Crea webs conversando con la IA."><style>:root{--bg:#0b0b12;--surface:#13131c;--surface-2:#1a1a28;--border:#262637;--muted:#8b8ba8;--text:#e8e8f0;--accent:#8b5cf6;--accent-hover:#7c3aed;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--user-bubble:#3b2a68;--assistant-bubble:#1a1a28;--radius:8px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}html,body,#view-app{height:100vh;margin:0}section[id^="view-"]{display:none}#view-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px 36px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,.6)}.login-card h1{margin:0 0 6px;font-size:22px;font-weight:700}.login-card h1 span{color:var(--accent)}.login-card p{color:var(--muted);margin:0 0 24px}.login-card label{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:13px;color:var(--muted)}input,select,textarea{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:9px 12px;font-family:var(--font);font-size:14px}textarea{resize:vertical}#view-app{display:grid;grid-template-columns:240px 1fr}.sidebar{background:#0a0a10;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 16px;gap:20px}.logo{font-weight:700;font-size:18px;letter-spacing:-.02em}.logo span{color:var(--accent)}nav a{display:block;padding:10px 12px;color:var(--muted);text-decoration:none;border-radius:6px;font-size:14px}nav a.active,nav a:hover{background:var(--surface-2);color:var(--text)}.user-chip{padding:10px 12px;font-size:13px;color:var(--muted);border:1px solid var(--border);border-radius:6px;margin-bottom:8px}.main{padding:24px 32px;overflow:auto}.panel{max-width:1400px}.panel-chat{display:flex;flex-direction:column;height:calc(100vh - 48px)}.project-meta{display:flex;gap:12px;align-items:center;margin-bottom:16px}.chip{background:var(--surface-2);padding:4px 10px;border-radius:999px;font-size:12px;color:var(--muted);font-family:monospace}.chat-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;flex:1;min-height:0}.chat-col,.preview-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden}.chat-messages{flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}.msg{padding:10px 14px;border-radius:10px;max-width:90%;font-size:14px;line-height:1.5;white-space:pre-wrap}.msg.user{background:var(--user-bubble);align-self:flex-end}.msg.assistant{background:var(--assistant-bubble);border:1px solid var(--border);align-self:flex-start}.msg.system{background:transparent;color:var(--muted);font-size:12px;align-self:center}.progress-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin:4px 0;max-width:95%;align-self:flex-start;font-size:13px}.progress-card h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;font-weight:600}.progress-step{display:flex;align-items:center;gap:10px;padding:4px 0;color:var(--muted)}.progress-step.done{color:var(--text)}.progress-step.active{color:var(--text)}.progress-step.error{color:var(--danger)}.progress-icon{width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}.progress-icon.pending{color:var(--muted)}.progress-icon.active::before{content:"";width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.progress-step .label{flex:1}.progress-step .time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}.progress-total{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}.file-chips{padding:0 16px 8px;display:flex;flex-wrap:wrap;gap:6px}.file-chip{background:var(--surface-2);border:1px solid var(--border);padding:4px 8px;border-radius:6px;font-size:12px;display:flex;gap:6px;align-items:center}.file-chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0}.chat-form{padding:12px 16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}.drop-zone{border:2px dashed var(--border);border-radius:6px;padding:10px;text-align:center;color:var(--muted);cursor:pointer;font-size:13px}.drop-zone.drag{border-color:var(--accent);background:var(--surface-2)}.chat-actions{display:flex;gap:12px;align-items:center}.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 8px}.tab{background:transparent;border:none;color:var(--muted);padding:10px 16px;cursor:pointer;font-size:13px}.tab.active{color:var(--text);border-bottom:2px solid var(--accent)}.tab-content{flex:1;overflow:auto;padding:16px}#preview-frame{width:100%;height:100%;min-height:500px;border:0;border-radius:6px;background:#fff}.file-list{display:flex;flex-direction:column;gap:4px}.file-item{padding:6px 8px;border-radius:4px;cursor:pointer;font-family:monospace;font-size:13px;display:flex;justify-content:space-between}.file-item:hover{background:var(--surface-2)}.file-item .size{color:var(--muted);font-size:11px}.files-section h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}pre code{background:#0a0a10;padding:16px;border-radius:8px;overflow:auto;font-family:monospace;font-size:13px;color:#d4d4d8;display:block;white-space:pre}.file-tabs{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}.file-tabs .file-tab{background:var(--surface-2);border:1px solid var(--border);padding:4px 10px;border-radius:999px;font-size:11px;cursor:pointer;color:var(--muted);font-family:monospace}.file-tabs .file-tab.active{color:var(--text);border-color:var(--accent)}.action-row{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}.btn{padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font)}.btn:hover{background:var(--surface)}.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover)}.btn-ghost{background:transparent}.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}.status{margin-left:8px;color:var(--muted);font-size:13px}.status.success{color:var(--success)}.status.error{color:var(--danger)}.status.pending::before{content:"";display:inline-block;width:10px;height:10px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;vertical-align:-2px;margin-right:6px;animation:spin .8s linear infinite}.badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}.badge.pending{color:var(--warning);border-color:var(--warning)}.badge.synced{color:var(--success);border-color:var(--success)}.badge.error{color:var(--danger);border-color:var(--danger)}.warning{background:#3f2d0a;border:1px solid var(--warning);color:#fde68a;padding:12px 16px;border-radius:8px;margin-bottom:16px}.error{color:var(--danger);margin-top:8px}.guard{padding:40px;text-align:center;color:var(--muted);background:var(--surface);border-radius:8px;border:1px solid var(--border)}.card{background:var(--surface);border:1px solid var(--border);padding:20px;border-radius:8px;margin-bottom:20px;max-width:500px}.card label{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:13px;color:var(--muted)}table{width:100%;border-collapse:collapse}th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;font-size:13px}th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.05em}tr:hover td{background:var(--surface-2)}@media(max-width:900px){#view-app{grid-template-columns:1fr}.chat-layout{grid-template-columns:1fr}.panel-chat{height:auto}}
+.progress-card{padding:14px 16px}
+.progress-step{flex-wrap:wrap;padding:6px 0;align-items:flex-start}
+.progress-step .icon-col{width:16px;flex-shrink:0;padding-top:3px}
+.progress-step .main-col{flex:1;min-width:0}
+.progress-step .label{display:block;line-height:1.3}
+.progress-step .detail{display:block;font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.progress-step.warning{color:var(--warning)}
+.progress-step.warning .detail{color:var(--warning)}
+.progress-icon.warning::before{content:"!";display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--warning);color:#13131c;font-size:10px;font-weight:700;font-family:var(--font)}
+.progress-step.done .icon-col{color:var(--success)}
+.progress-log{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+.progress-log summary{cursor:pointer;color:var(--muted);user-select:none}
+.progress-log summary:hover{color:var(--text)}
+.progress-log pre{margin-top:8px;background:#0a0a10;padding:10px;border-radius:6px;font-family:monospace;font-size:11px;color:#d4d4d8;max-height:200px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.progress-retry{background:transparent;border:1px solid var(--warning);color:var(--warning);padding:3px 10px;border-radius:6px;font-size:11px;cursor:pointer;margin-left:8px;font-family:var(--font)}
+.progress-retry:hover{background:var(--warning);color:#13131c}
+.badge.warning{color:var(--warning);border-color:var(--warning)}
+</style><script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script><script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script></head><body><section id="view-login"><div class="login-card"><h1>Generador de webs con <span>IA</span></h1><p>Inicia sesión para continuar</p><form id="login-form"><label>Usuario<input name="username" autocomplete="username" required></label><label>Contraseña<input name="password" type="password" autocomplete="current-password" required></label><button class="btn btn-primary" type="submit">Iniciar sesión</button></form><div id="login-error" class="error" role="alert"></div></div></section><section id="view-app"><aside class="sidebar"><div class="logo">Generador <span>IA</span></div><nav><a href="#generate" data-nav="generate">Generar</a><a href="#history" data-nav="history">Historial</a><a href="#admin" data-nav="admin" id="admin-link" style="display:none">Administración</a></nav><div style="margin-top:auto"><div id="user-chip" class="user-chip"></div><button id="signout-btn" class="btn btn-ghost">Cerrar sesión</button></div></aside><main class="main"><div id="panel-generate" class="panel panel-chat" style="display:none"><h1 id="project-title">Proyecto nuevo</h1><div class="project-meta"><span id="project-id-chip" class="chip">—</span><button id="new-project-btn" class="btn">Nuevo proyecto</button></div><div id="gen-guard-user" class="guard" style="display:none">Solo los administradores pueden generar sitios. Pide acceso a un administrador.</div><div class="chat-layout"><section class="chat-col"><div class="chat-messages" id="chat-messages" aria-live="polite"></div><div id="file-chips" class="file-chips"></div><form id="chat-form" class="chat-form"><label class="drop-zone" id="drop-zone"><input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg"><span>Arrastra archivos aquí o haz clic para subir</span></label><textarea id="chat-input" name="message" rows="3" placeholder="Describe la web que quieres generar. Por ejemplo: una landing oscura para una cafetería de especialidad con menú y reservas."></textarea><div class="chat-actions"><button type="submit" id="chat-send" class="btn btn-primary">Enviar</button><span id="gen-status" class="status"></span></div></form></section><section class="preview-col"><div class="tabs"><button data-tab="preview" class="tab active">Vista previa</button><button data-tab="files" class="tab">Archivos</button><button data-tab="code" class="tab">Código</button><button data-tab="actions" class="tab">Acciones</button></div><div class="tab-content" id="tab-preview"><iframe id="preview-frame" sandbox="allow-scripts" title="Vista previa"></iframe></div><div class="tab-content" id="tab-files" style="display:none"><div class="files-section"><h3>Archivos subidos</h3><div id="inputs-list" class="file-list muted">Todavía no has subido archivos.</div></div><div class="files-section"><h3>Archivos generados</h3><div id="outputs-list" class="file-list muted">Aún no se ha generado ningún archivo.</div></div></div><div class="tab-content" id="tab-code" style="display:none"><div id="code-file-tabs" class="file-tabs"></div><pre><code id="code-view"></code></pre></div><div class="tab-content" id="tab-actions" style="display:none"><div class="action-row"><button id="download-zip-btn" class="btn">Descargar ZIP</button><span class="muted">Solo archivos generados.</span></div><div class="action-row"><label>Slug de publicación <input type="text" id="publish-slug" placeholder="mi-sitio" pattern="[a-z0-9-]+"></label><button id="publish-btn" class="btn btn-primary">Publicar</button><span id="publish-status" class="status"></span></div></div></section></div></div><div id="panel-history" class="panel" style="display:none"><h1>Tus proyectos</h1><div id="history-empty" class="muted">Sin proyectos todavía. Crea uno desde Generar.</div><table id="history-table"><thead><tr><th>Título</th><th>Usuario</th><th>Actualizado</th><th>Mensajes</th><th>Publicado en</th><th></th></tr></thead><tbody></tbody></table></div><div id="panel-admin" class="panel" style="display:none"><h1>Administración</h1><div class="warning">Los cambios se confirman al repositorio público. Este es un sistema de autenticación de demostración — no lo uses en producción.</div><form id="add-user-form" class="card"><h3>Crear usuario</h3><label>Usuario<input name="username" type="text" required></label><label>Contraseña<input name="password" type="password" required></label><label>Rol<select name="role"><option value="user">usuario</option><option value="admin">admin</option></select></label><button type="submit" class="btn btn-primary">Crear</button><span id="admin-sync-badge" class="badge">Sin cambios</span><div id="admin-status" class="status" role="status"></div></form><table id="users-table"><thead><tr><th>Usuario</th><th>Rol</th><th>Creado</th><th>Acciones</th></tr></thead><tbody></tbody></table></div></main></section><script id="app-core">
 
 (function(){
   const WEBHOOK_DB_UPLOAD = "https://build.twin.so/triggers/1811eb43-8aad-4395-b889-32006bdb869e/webhook";
@@ -93,7 +111,7 @@
         const initialEtag = window.App.dbEtag;
         await window.App.postWebhook(WEBHOOK_DB_UPLOAD, { db_base64: b64 });
         const start = Date.now();
-        while (Date.now() - start < 20000) {
+        while (Date.now() - start < 60000) {
           await new Promise(r => setTimeout(r, 1200));
           try {
             const r = await fetch('./db.sqlite?t=' + Date.now(), { method:'HEAD', cache:'no-store' });
@@ -195,15 +213,37 @@
   function exec(sql, params) { const st=window.App.db.prepare(sql); if (params) st.bind(params); const rows=[]; while (st.step()) rows.push(st.getAsObject()); st.free(); return rows; }
   function run(sql, params) { const st=window.App.db.prepare(sql); if (params) st.bind(params); st.step(); st.free(); }
 
-  const BADGE_TXT = { idle:'Sin cambios', pending:'Guardando…', synced:'Sincronizado', error:'Error al sincronizar' };
+  const BADGE_TXT = { idle:'Sin cambios', pending:'Guardando…', synced:'Sincronizado', warning:'Sincronización pendiente', error:'Error al sincronizar' };
   const ROLE_TXT = { admin:'admin', user:'usuario' };
 
   const AppAdmin = {
-    setBadge(state) {
+    setBadge(state, onRetry) {
       const b = q('#admin-sync-badge');
       if (!b) return;
       b.className = 'badge' + (state && state!=='idle' ? ' ' + state : '');
       b.textContent = BADGE_TXT[state] || state;
+      // Attach or detach retry button
+      let retry = q('#admin-sync-retry');
+      if ((state === 'error' || state === 'warning') && onRetry) {
+        if (!retry) {
+          retry = document.createElement('button');
+          retry.id = 'admin-sync-retry';
+          retry.type = 'button';
+          retry.className = 'progress-retry';
+          retry.textContent = 'Reintentar sincronización';
+          b.parentNode.insertBefore(retry, b.nextSibling);
+        }
+        retry.onclick = async () => {
+          retry.disabled = true;
+          AppAdmin.setBadge('pending');
+          const res = await window.App.pushDbAndSync(q('#admin-status'));
+          AppAdmin.setBadge(res.synced ? 'synced' : 'warning', () => AppAdmin.setBadge.call(AppAdmin, 'error', onRetry));
+          retry.disabled = false;
+          if (res.synced && retry.parentNode) retry.parentNode.removeChild(retry);
+        };
+      } else if (retry && retry.parentNode) {
+        retry.parentNode.removeChild(retry);
+      }
     },
     renderAdmin() {
       if (!window.App.session || window.App.session.role !== 'admin') { location.hash='#generate'; return; }
@@ -224,7 +264,7 @@
           AppAdmin.setBadge('pending');
           const status = q('#admin-status'); if (status) { status.textContent='Usuario '+u+' eliminado. Sincronizando…'; status.className='status pending'; }
           const res = await window.App.pushDbAndSync(status);
-          AppAdmin.setBadge(res.synced ? 'synced' : 'error');
+          AppAdmin.setBadge(res.synced ? 'synced' : 'warning', () => window.App.pushDbAndSync(q('#admin-status')));
         });
       });
     }
@@ -262,7 +302,7 @@
       status.className = 'status pending';
       AppAdmin.setBadge('pending');
       window.App.pushDbAndSync(status).then(res => {
-        AppAdmin.setBadge(res.synced ? 'synced' : 'error');
+        AppAdmin.setBadge(res.synced ? 'synced' : 'warning', () => window.App.pushDbAndSync(q('#admin-status')));
       });
     }
   });
@@ -284,10 +324,7 @@
   function escHTML(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function exec(sql, params) { const st=window.App.db.prepare(sql); if (params) st.bind(params); const rows=[]; while (st.step()) rows.push(st.getAsObject()); st.free(); return rows; }
   function run(sql, params) { const st=window.App.db.prepare(sql); if (params) st.bind(params); st.step(); st.free(); }
-  function uuid() {
-    if (crypto.randomUUID) return crypto.randomUUID();
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r=Math.random()*16|0; const v=c==='x'?r:(r&0x3|0x8); return v.toString(16); });
-  }
+  function uuid() { if (crypto.randomUUID) return crypto.randomUUID(); return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r=Math.random()*16|0; const v=c==='x'?r:(r&0x3|0x8); return v.toString(16); }); }
   function slugify(s) { return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-').slice(0,48) || 'sitio'; }
   function fileSize(b64) { return Math.floor((b64||'').length * 3 / 4); }
   function humanSize(n) {
@@ -304,137 +341,213 @@
   }
   function isTextMime(mime) { return /^text\//.test(mime) || /javascript|json|svg|xml/.test(mime) || /markdown/.test(mime); }
 
-  // Progress step definitions
-  const STEPS_NEW = [
-    { key:'analyze', label:'Analizando tu solicitud' },
-    { key:'attachments', label:'Revisando archivos adjuntos' },
-    { key:'plan', label:'Planificando estructura del sitio' },
-    { key:'html', label:'Generando HTML y estilos' },
-    { key:'js', label:'Generando JavaScript' },
-    { key:'validate', label:'Optimizando y validando archivos' },
-    { key:'save', label:'Guardando el proyecto' }
-  ];
-  const STEPS_ITER = [
-    { key:'read', label:'Leyendo tu petición' },
-    { key:'state', label:'Revisando estado actual del proyecto' },
-    { key:'apply', label:'Aplicando cambios' },
-    { key:'update', label:'Actualizando archivos' },
-    { key:'save', label:'Guardando el proyecto' }
-  ];
-  // Heuristic durations (ms) — used as fallback timeline while waiting for real progress file.
-  const HEURISTIC = {
-    analyze:4000, attachments:3000, plan:12000, html:35000, js:15000, validate:8000, save:5000,
-    read:3000, state:4000, apply:30000, update:10000, save_iter:5000
-  };
+  // ── Tolerant JSON parser (strips code fences, repairs trailing commas) ──
+  function tryParseLenient(raw) {
+    if (!raw) return null;
+    if (typeof raw === 'object') return raw;
+    let t = String(raw);
+    // 1) Strip markdown fences
+    const fence = t.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (fence) t = fence[1];
+    // 2) Find first { and last }
+    const first = t.indexOf('{'); const last = t.lastIndexOf('}');
+    if (first >= 0 && last > first) t = t.substring(first, last+1);
+    // 3) Try direct parse
+    try { return JSON.parse(t); } catch(e) {}
+    // 4) Remove trailing commas before ] and }
+    let t2 = t.replace(/,(\s*[}\]])/g, '$1');
+    try { return JSON.parse(t2); } catch(e) {}
+    // 5) Replace smart quotes with straight quotes
+    t2 = t2.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+    try { return JSON.parse(t2); } catch(e) {}
+    return null;
+  }
 
-  let currentProject = null;
-  let currentTab = 'preview';
-  let currentCodeFileIdx = 0;
+  // ── Default step sets (fallback if LLM plan missing) ──
+  const FALLBACK_STEPS_NEW = [
+    { key:'analyze', label:'Analizando tu solicitud', detail:'' },
+    { key:'plan', label:'Planificando estructura del sitio', detail:'' },
+    { key:'html', label:'Generando HTML y estilos', detail:'' },
+    { key:'validate', label:'Revisando accesibilidad', detail:'' },
+    { key:'save', label:'Guardando el proyecto', detail:'' }
+  ];
+  const FALLBACK_STEPS_ITER = [
+    { key:'read', label:'Leyendo tu petición', detail:'' },
+    { key:'state', label:'Revisando el proyecto actual', detail:'' },
+    { key:'apply', label:'Aplicando cambios', detail:'' },
+    { key:'save', label:'Guardando cambios', detail:'' }
+  ];
 
-  // Progress controller: renders and ticks; can be overridden by remote updates.
-  function makeProgressCtrl({ jobId, steps, containerMsgEl, totalStart }) {
-    const state = steps.map((s,i) => ({ key:s.key, label:s.label, status: i===0?'in_progress':'pending', started_at: i===0?Date.now():null, ended_at:null, duration_ms:null }));
+  // ── Progress controller ──
+  function makeProgressCtrl({ jobId, steps, containerEl, totalStart, techLog }) {
+    const state = steps.map((s, i) => ({
+      key: s.key || ('step-' + i), label: s.label, detail: s.detail || '',
+      status: 'pending', started_at: null, ended_at: null, duration_ms: null
+    }));
+    // First step begins immediately
+    if (state[0]) { state[0].status = 'in_progress'; state[0].started_at = Date.now(); }
+
     let cancelled = false;
     let tick = null;
-    let heuristicTimer = null;
-    let heuristicIdx = 0;
+    let showLog = false;
+    const log = techLog || [];
+
+    function pushLog(line) { log.push('[' + new Date().toLocaleTimeString('es-ES') + '] ' + line); }
 
     function render() {
       const totalMs = Date.now() - totalStart;
-      const done = state.every(s => s.status==='done');
-      containerMsgEl.innerHTML =
+      const done = state.every(s => s.status==='done' || s.status==='warning');
+      containerEl.innerHTML =
         '<h4>Progreso</h4>' +
-        state.map(s => {
-          const icon = s.status==='done' ? '<span class="progress-icon" aria-hidden="true">✓</span>' :
-                       s.status==='in_progress' ? '<span class="progress-icon active" aria-hidden="true"></span>' :
-                       s.status==='error' ? '<span class="progress-icon" aria-hidden="true" style="color:var(--danger)">✕</span>' :
-                       '<span class="progress-icon pending" aria-hidden="true">○</span>';
+        state.map((s, i) => {
+          const iconHtml =
+            s.status==='done' ? '<span class="progress-icon" aria-hidden="true">✓</span>' :
+            s.status==='in_progress' ? '<span class="progress-icon active" aria-hidden="true"></span>' :
+            s.status==='error' ? '<span class="progress-icon" aria-hidden="true" style="color:var(--danger)">✕</span>' :
+            s.status==='warning' ? '<span class="progress-icon warning" aria-hidden="true"></span>' :
+            '<span class="progress-icon pending" aria-hidden="true">○</span>';
           let time = '';
           if (s.status==='in_progress' && s.started_at) time = window.AppI18n.formatDuration(Date.now() - s.started_at);
-          else if (s.status==='done' && s.duration_ms != null) time = 'hecho en ' + window.AppI18n.formatDuration(s.duration_ms);
+          else if ((s.status==='done' || s.status==='warning') && s.duration_ms != null) time = 'hecho en ' + window.AppI18n.formatDuration(s.duration_ms);
           else if (s.status==='error') time = 'error';
-          return '<div class="progress-step '+s.status+'">'+icon+'<span class="label">'+escHTML(s.label)+'</span><span class="time">'+time+'</span></div>';
+          const detailHtml = s.detail ? '<span class="detail" title="'+escHTML(s.detail)+'">'+escHTML(s.detail)+'</span>' : '';
+          let retryBtn = '';
+          if (s.status==='warning' && s.retryable) retryBtn = '<button type="button" class="progress-retry" data-retry-idx="'+i+'">Reintentar sincronización</button>';
+          return '<div class="progress-step '+s.status+'">'+
+            '<span class="icon-col">'+iconHtml+'</span>'+
+            '<span class="main-col"><span class="label">'+escHTML(s.label)+'</span>'+detailHtml+'</span>'+
+            '<span class="time">'+time+'</span>'+ retryBtn +'</div>';
         }).join('') +
-        (done ? '<div class="progress-total">Terminado en ' + window.AppI18n.formatDuration(totalMs) + '</div>' : '');
+        (done ? '<div class="progress-total">Terminado en ' + window.AppI18n.formatDuration(totalMs) + '</div>' : '') +
+        '<details class="progress-log" '+(showLog?'open':'')+'><summary>Ver detalles técnicos</summary><pre>'+escHTML(log.join('\n'))+'</pre></details>';
+      // Attach retry handlers
+      all('.progress-retry[data-retry-idx]', containerEl).forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const idx = parseInt(btn.getAttribute('data-retry-idx'),10);
+          const s = state[idx];
+          if (!s || !s.onRetry) return;
+          s.status = 'in_progress'; s.started_at = Date.now(); s.detail = 'Reintentando…';
+          pushLog('[paso ' + idx + '] reintento manual de sincronización');
+          render();
+          try { await s.onRetry(state, idx, pushLog, render); } catch(e) { pushLog('[paso ' + idx + '] error al reintentar: ' + e.message); }
+          render();
+        });
+      });
+      all('.progress-log summary', containerEl).forEach(s => {
+        s.addEventListener('click', () => { showLog = !s.parentElement.open; });
+      });
     }
 
-    function startHeuristic() {
-      heuristicIdx = 0;
-      scheduleNext();
-    }
-    function scheduleNext() {
-      if (cancelled) return;
-      const cur = state[heuristicIdx];
-      if (!cur) return;
-      // Determine heuristic duration
-      const h = HEURISTIC[cur.key] || 10000;
-      heuristicTimer = setTimeout(() => {
-        if (cancelled) return;
-        // Only auto-advance if remote progress hasn't taken over (i.e. label says 'in_progress' still)
-        if (cur.status === 'in_progress') {
-          // heuristic suggests we'd move on, but DON'T mark as done yet — we wait for real result
-          // Instead we just keep the ticker running; advance the 'in_progress' pointer forward only
-          // if we have many steps so user can see some movement.
-          if (heuristicIdx < state.length - 1) {
-            cur.status = 'done'; cur.ended_at = Date.now(); cur.duration_ms = cur.ended_at - cur.started_at;
-            const next = state[heuristicIdx+1];
-            next.status = 'in_progress'; next.started_at = Date.now();
-            heuristicIdx++;
-            scheduleNext();
+    function advanceTo(targetIndex, newStatusForCurrent) {
+      // Complete current in_progress, open next up to targetIndex.
+      for (let i = 0; i < state.length; i++) {
+        const s = state[i];
+        if (i < targetIndex) {
+          if (s.status === 'in_progress') {
+            s.status = newStatusForCurrent || 'done';
+            s.ended_at = Date.now();
+            s.duration_ms = s.started_at ? (s.ended_at - s.started_at) : 0;
+          } else if (s.status === 'pending') {
+            s.status = 'done';
+            s.started_at = s.started_at || Date.now();
+            s.ended_at = Date.now();
+            s.duration_ms = s.ended_at - s.started_at;
           }
+        } else if (i === targetIndex) {
+          if (s.status === 'pending') { s.status = 'in_progress'; s.started_at = Date.now(); }
         }
-      }, h);
+      }
     }
 
-    function applyRemote(remoteSteps) {
-      // remoteSteps: [{key, label, status, started_at, ended_at, duration_ms}]
-      // Merge by key; authoritative source.
-      const byKey = {};
-      remoteSteps.forEach(r => byKey[r.key] = r);
-      state.forEach(s => {
-        const r = byKey[s.key];
-        if (!r) return;
-        s.status = r.status || s.status;
-        if (r.started_at) s.started_at = new Date(r.started_at).getTime();
-        if (r.ended_at) s.ended_at = new Date(r.ended_at).getTime();
-        if (r.duration_ms != null) s.duration_ms = r.duration_ms;
-        else if (s.ended_at && s.started_at) s.duration_ms = s.ended_at - s.started_at;
+    function applyPlan(plan) {
+      // plan: {summary, steps:[{label,detail}]}
+      // Merge: keep existing states for steps that already ran; extend with new labels/details.
+      if (!plan || !Array.isArray(plan.steps)) return;
+      const newSteps = plan.steps.map((p, i) => {
+        const existing = state[i] || {};
+        return {
+          key: p.key || existing.key || ('step-' + i),
+          label: p.label || existing.label || ('Paso ' + (i+1)),
+          detail: p.detail || existing.detail || '',
+          status: existing.status || 'pending',
+          started_at: existing.started_at || null,
+          ended_at: existing.ended_at || null,
+          duration_ms: existing.duration_ms || null
+        };
       });
+      state.length = 0; newSteps.forEach(s => state.push(s));
+      pushLog('plan del modelo aplicado: ' + plan.steps.length + ' pasos');
+      if (plan.summary) pushLog('resumen IA: ' + plan.summary);
     }
 
-    function finalizeAllDone() {
-      state.forEach(s => {
-        if (s.status === 'in_progress') {
-          s.status = 'done';
-          s.ended_at = Date.now();
-          s.duration_ms = s.started_at ? (s.ended_at - s.started_at) : null;
+    async function animateToEnd(finalDetail) {
+      // Walk through remaining pending steps with a min gap so UI feels progressive.
+      for (let i = 0; i < state.length; i++) {
+        const s = state[i];
+        if (s.status === 'done' || s.status === 'warning' || s.status === 'error') continue;
+        if (s.status === 'pending') { s.status = 'in_progress'; s.started_at = Date.now(); render(); }
+        // Gap 400-700ms
+        await new Promise(r => setTimeout(r, 400 + Math.floor(Math.random()*300)));
+        // If last step, leave in_progress for the caller to finalize
+        if (i < state.length - 1) {
+          s.status = 'done'; s.ended_at = Date.now(); s.duration_ms = s.ended_at - s.started_at;
+          render();
+        } else if (finalDetail && !s.detail) {
+          s.detail = finalDetail;
+          render();
         }
-        if (s.status === 'pending') {
-          s.status = 'done';
-          s.started_at = s.started_at || Date.now();
-          s.ended_at = Date.now();
-          s.duration_ms = 0;
-        }
-      });
+      }
     }
-    function finalizeWithError(msg) {
-      state.forEach(s => {
-        if (s.status === 'in_progress') { s.status = 'error'; s.ended_at = Date.now(); }
-      });
-      render();
+
+    function finalizeLast({status, detail, onRetry}) {
+      const last = state[state.length - 1];
+      if (!last) return;
+      if (last.status === 'pending') { last.started_at = Date.now(); }
+      last.status = status || 'done';
+      last.ended_at = Date.now();
+      last.duration_ms = last.started_at ? (last.ended_at - last.started_at) : 0;
+      if (detail) last.detail = detail;
+      if (onRetry) { last.onRetry = onRetry; last.retryable = true; }
     }
 
     tick = setInterval(() => { if (!cancelled) render(); }, 300);
     render();
-    startHeuristic();
 
     return {
-      applyRemote(rs) { applyRemote(rs); render(); },
-      done() { cancelled = true; clearInterval(tick); clearTimeout(heuristicTimer); finalizeAllDone(); render(); },
-      error(msg) { cancelled = true; clearInterval(tick); clearTimeout(heuristicTimer); finalizeWithError(msg); },
-      state() { return state; }
+      applyRemote(remoteSteps) {
+        if (!Array.isArray(remoteSteps)) return;
+        const byKey = {};
+        remoteSteps.forEach(r => { if (r.key) byKey[r.key] = r; });
+        // Also allow overwriting by step_index if keys absent
+        state.forEach((s, i) => {
+          const r = byKey[s.key] || remoteSteps.find(rr => rr.step_index === i);
+          if (!r) return;
+          if (r.label) s.label = r.label;
+          if (r.detail != null) s.detail = r.detail;
+          if (r.status) s.status = r.status;
+          if (r.started_at) s.started_at = new Date(r.started_at).getTime();
+          if (r.ended_at) s.ended_at = new Date(r.ended_at).getTime();
+          if (r.duration_ms != null) s.duration_ms = r.duration_ms;
+          else if (s.ended_at && s.started_at) s.duration_ms = s.ended_at - s.started_at;
+        });
+        render();
+      },
+      applyPlan(p) { applyPlan(p); render(); },
+      advanceTo(i, statusForCurrent) { advanceTo(i, statusForCurrent); render(); },
+      updateStepDetail(idx, detail) { if (state[idx]) { state[idx].detail = detail; render(); } },
+      animateToEnd,
+      finalizeLast(opts) { finalizeLast(opts); render(); },
+      done() { cancelled = true; clearInterval(tick); state.forEach(s => { if (s.status === 'in_progress') { s.status = 'done'; s.ended_at = Date.now(); s.duration_ms = s.ended_at - s.started_at; } else if (s.status === 'pending') { s.status = 'done'; s.started_at = s.started_at || Date.now(); s.ended_at = Date.now(); s.duration_ms = 0; } }); render(); },
+      warn(detail, onRetry) { cancelled = true; clearInterval(tick); finalizeLast({status:'warning', detail, onRetry}); render(); },
+      error(msg) { cancelled = true; clearInterval(tick); state.forEach(s => { if (s.status === 'in_progress') { s.status = 'error'; s.ended_at = Date.now(); s.detail = msg || s.detail; } }); render(); },
+      state() { return state; },
+      pushLog
     };
   }
+
+  let currentProject = null;
+  let currentTab = 'preview';
+  let currentCodeFileIdx = 0;
 
   const AppGen = {
     enterGenerate() {
@@ -461,7 +574,7 @@
       const s = window.App.session;
       currentProject = { id, title:'Proyecto nuevo', messages:[], inputs:[], outputs:[], published_slug:null };
       run('INSERT INTO projects (id, username, title, updated_at) VALUES (?, ?, ?, datetime(\'now\'))', [id, s.username, currentProject.title]);
-      currentTab = 'preview'; currentCodeFileIdx = 0;
+      currentTab='preview'; currentCodeFileIdx=0;
     },
 
     loadProject(id) {
@@ -469,12 +582,8 @@
       if (!row) return;
       const msgs = exec('SELECT id, role, content, created_at FROM project_messages WHERE project_id = ? ORDER BY created_at', [id]);
       const files = exec('SELECT path, content_base64, mime, kind FROM project_files WHERE project_id = ?', [id]);
-      currentProject = {
-        id: row.id, title: row.title, published_slug: row.published_slug,
-        messages: msgs,
-        inputs: files.filter(f => f.kind==='input'),
-        outputs: files.filter(f => f.kind==='output')
-      };
+      currentProject = { id: row.id, title: row.title, published_slug: row.published_slug, messages: msgs,
+        inputs: files.filter(f => f.kind==='input'), outputs: files.filter(f => f.kind==='output') };
       currentTab='preview'; currentCodeFileIdx=0;
       location.hash='#generate';
       setTimeout(()=>AppGen.renderProject(), 20);
@@ -486,10 +595,6 @@
       q('#project-id-chip').textContent = currentProject.id.slice(0,8);
       const mbox = q('#chat-messages');
       mbox.innerHTML = currentProject.messages.map(m => {
-        if (m.role === 'progress') {
-          // Rendered progress snapshot
-          return '<div class="progress-card"><h4>Progreso</h4>'+escHTML(m.content)+'</div>';
-        }
         const cls = m.role === 'user' ? 'user' : m.role === 'assistant' ? 'assistant' : 'system';
         return '<div class="msg '+cls+'">'+escHTML(m.content)+'</div>';
       }).join('') || '<div class="msg system">Escribe un mensaje y, opcionalmente, adjunta archivos para empezar.</div>';
@@ -500,32 +605,17 @@
       ).join('');
       const inputsList = q('#inputs-list');
       if (currentProject.inputs.length === 0) inputsList.innerHTML = '<span class="muted">Todavía no has subido archivos.</span>';
-      else {
-        inputsList.className='file-list';
-        inputsList.innerHTML = currentProject.inputs.map(f =>
-          '<div class="file-item" data-kind="input" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>'
-        ).join('');
-      }
+      else { inputsList.className='file-list'; inputsList.innerHTML = currentProject.inputs.map(f => '<div class="file-item" data-kind="input" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>').join(''); }
       const outList = q('#outputs-list');
       if (currentProject.outputs.length === 0) outList.innerHTML = '<span class="muted">Aún no se ha generado ningún archivo.</span>';
-      else {
-        outList.className='file-list';
-        outList.innerHTML = currentProject.outputs.map(f =>
-          '<div class="file-item" data-kind="output" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>'
-        ).join('');
-      }
+      else { outList.className='file-list'; outList.innerHTML = currentProject.outputs.map(f => '<div class="file-item" data-kind="output" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>').join(''); }
       const ct = q('#code-file-tabs');
       const allFiles = currentProject.outputs.concat(currentProject.inputs.filter(f => isTextMime(f.mime||mimeFor(f.path))));
-      ct.innerHTML = allFiles.map((f,i) =>
-        '<button class="file-tab'+(i===currentCodeFileIdx?' active':'')+'" data-idx="'+i+'">'+escHTML(f.path)+'</button>'
-      ).join('');
+      ct.innerHTML = allFiles.map((f,i) => '<button class="file-tab'+(i===currentCodeFileIdx?' active':'')+'" data-idx="'+i+'">'+escHTML(f.path)+'</button>').join('');
       const codeFile = allFiles[currentCodeFileIdx];
       q('#code-view').textContent = codeFile ? (isTextMime(codeFile.mime||mimeFor(codeFile.path)) ? window.App.b64ToText(codeFile.content_base64) : '[archivo binario, '+humanSize(fileSize(codeFile.content_base64))+']') : '';
       all('.tabs .tab[data-tab]').forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === currentTab));
-      ['preview','files','code','actions'].forEach(n => {
-        const el = q('#tab-' + n);
-        if (el) el.style.display = (n === currentTab) ? '' : 'none';
-      });
+      ['preview','files','code','actions'].forEach(n => { const el = q('#tab-' + n); if (el) el.style.display = (n === currentTab) ? '' : 'none'; });
       AppGen.refreshPreview();
       const slugInput = q('#publish-slug');
       if (slugInput && !slugInput.value) slugInput.value = currentProject.published_slug || slugify(currentProject.title || 'sitio');
@@ -537,39 +627,26 @@
     },
 
     refreshPreview() {
-      const frame = q('#preview-frame');
-      if (!frame) return;
+      const frame = q('#preview-frame'); if (!frame) return;
       const index = currentProject.outputs.find(f => /(^|\/)index\.html?$/i.test(f.path)) || currentProject.outputs.find(f => /\.html?$/i.test(f.path));
       if (!index) { frame.srcdoc = '<html lang="es"><body style="background:#0b0b12;color:#8b8ba8;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div>La vista previa aparecerá aquí tras la generación.</div></body></html>'; return; }
       let html = window.App.b64ToText(index.content_base64);
-      const all = currentProject.outputs.concat(currentProject.inputs);
-      all.forEach(f => {
-        if (f === index) return;
-        const p = f.path.replace(/^\.?\//,'');
-        const du = 'data:' + (f.mime || mimeFor(f.path)) + ';base64,' + f.content_base64;
-        html = html.split('"'+p+'"').join('"'+du+'"').split("'"+p+"'").join("'"+du+"'").split('"./'+p+'"').join('"'+du+'"').split("'./"+p+"'").join("'"+du+"'");
-      });
+      const allf = currentProject.outputs.concat(currentProject.inputs);
+      allf.forEach(f => { if (f === index) return; const p = f.path.replace(/^\.?\//,''); const du = 'data:' + (f.mime || mimeFor(f.path)) + ';base64,' + f.content_base64; html = html.split('"'+p+'"').join('"'+du+'"').split("'"+p+"'").join("'"+du+"'").split('"./'+p+'"').join('"'+du+'"').split("'./"+p+"'").join("'"+du+"'"); });
       frame.srcdoc = html;
     },
 
-    totalProjectBytes() {
-      return currentProject.inputs.reduce((s,f)=>s+fileSize(f.content_base64),0) +
-             currentProject.outputs.reduce((s,f)=>s+fileSize(f.content_base64),0);
-    },
+    totalProjectBytes() { return currentProject.inputs.reduce((s,f)=>s+fileSize(f.content_base64),0) + currentProject.outputs.reduce((s,f)=>s+fileSize(f.content_base64),0); },
 
     async addInputFile(file) {
-      const buf = await file.arrayBuffer();
-      const u8 = new Uint8Array(buf);
-      const b64 = window.App.u8ToB64(u8);
-      const path = file.name;
-      const mime = file.type || mimeFor(path);
+      const buf = await file.arrayBuffer(); const u8 = new Uint8Array(buf);
+      const b64 = window.App.u8ToB64(u8); const path = file.name; const mime = file.type || mimeFor(path);
       currentProject.inputs = currentProject.inputs.filter(f => f.path !== path);
       const projected = AppGen.totalProjectBytes() + fileSize(b64);
       if (projected > window.App.MAX_PROJECT_BYTES) { alert('El proyecto supera el límite de 10 MB. Quita archivos antes de continuar.'); return; }
       const entry = { path, content_base64:b64, mime, kind:'input' };
       currentProject.inputs.push(entry);
-      run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)',
-          [currentProject.id, path, b64, mime, 'input']);
+      run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)', [currentProject.id, path, b64, mime, 'input']);
       AppGen.renderProject();
     },
     removeInputFile(path) {
@@ -579,18 +656,13 @@
     },
     applyOutputFiles(files) {
       files.forEach(f => {
-        if (f.__deleted__) {
-          currentProject.outputs = currentProject.outputs.filter(o => o.path !== f.path);
-          run('DELETE FROM project_files WHERE project_id = ? AND path = ? AND kind = ?', [currentProject.id, f.path, 'output']);
-          return;
-        }
+        if (f.__deleted__) { currentProject.outputs = currentProject.outputs.filter(o => o.path !== f.path); run('DELETE FROM project_files WHERE project_id = ? AND path = ? AND kind = ?', [currentProject.id, f.path, 'output']); return; }
         const b64 = window.App.textToB64(f.content || '');
         const mime = mimeFor(f.path);
         const existing = currentProject.outputs.findIndex(o => o.path === f.path);
         const entry = { path:f.path, content_base64:b64, mime, kind:'output' };
         if (existing >= 0) currentProject.outputs[existing] = entry; else currentProject.outputs.push(entry);
-        run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)',
-            [currentProject.id, f.path, b64, mime, 'output']);
+        run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)', [currentProject.id, f.path, b64, mime, 'output']);
       });
     },
     addMessage(role, content) {
@@ -605,26 +677,13 @@
       AppGen.addMessage('user', text);
       const isIteration = currentProject.outputs.length > 0;
       const firstUserMsg = currentProject.messages.filter(m => m.role==='user').length === 1;
-      if (firstUserMsg) {
-        const title = text.slice(0,80);
-        currentProject.title = title;
-        run('UPDATE projects SET title = ?, updated_at = datetime(\'now\') WHERE id = ?', [title, currentProject.id]);
-      } else {
-        run('UPDATE projects SET updated_at = datetime(\'now\') WHERE id = ?', [currentProject.id]);
-      }
+      if (firstUserMsg) { const title = text.slice(0,80); currentProject.title = title; run('UPDATE projects SET title = ?, updated_at = datetime(\'now\') WHERE id = ?', [title, currentProject.id]); }
+      else run('UPDATE projects SET updated_at = datetime(\'now\') WHERE id = ?', [currentProject.id]);
       AppGen.renderProject();
 
-      // Build the progress step set
-      let steps = (isIteration ? STEPS_ITER : STEPS_NEW).slice();
-      if (!isIteration && currentProject.inputs.length === 0) {
-        steps = steps.filter(s => s.key !== 'attachments');
-      }
-      // Whether the plan includes JS depends on whether prompt mentions interactivity — heuristic:
-      if (!isIteration && !/interactivo|formulari|boton|script|dinamic|javascript|filtro|calculad/i.test(text)) {
-        steps = steps.filter(s => s.key !== 'js');
-      }
+      // Initial fallback steps (will be overridden by plan from LLM when it arrives)
+      let steps = (isIteration ? FALLBACK_STEPS_ITER : FALLBACK_STEPS_NEW).slice();
 
-      // Insert a progress message placeholder
       const progressEl = document.createElement('div');
       progressEl.className = 'progress-card';
       progressEl.setAttribute('aria-live', 'polite');
@@ -632,59 +691,58 @@
       q('#chat-messages').scrollTop = q('#chat-messages').scrollHeight;
 
       const jobId = uuid();
-      const ctrl = makeProgressCtrl({ jobId, steps, containerMsgEl: progressEl, totalStart: Date.now() });
-      status.textContent = 'Generando…'; status.className = 'status pending';
+      const techLog = [];
+      const ctrl = makeProgressCtrl({ jobId, steps, containerEl: progressEl, totalStart: Date.now(), techLog });
+      ctrl.pushLog('job_id=' + jobId + ' proyecto=' + currentProject.id.slice(0,8) + ' iteración=' + isIteration);
+      status.textContent = 'Generando…'; status.className='status pending';
 
-      // Fire webhook
       const payload = {
-        job_id: jobId,
-        project_id: currentProject.id,
-        username: window.App.session.username,
-        prompt: text,
-        mode: 'auto',
-        locale: 'es-ES',
-        is_iteration: isIteration,
+        job_id: jobId, project_id: currentProject.id, username: window.App.session.username,
+        prompt: text, mode: 'auto', locale: 'es-ES', is_iteration: isIteration,
         history: currentProject.messages.filter(m => m.role==='user' || m.role==='assistant').map(m => ({ role:m.role, content:m.content })),
         inputs: currentProject.inputs.map(f => ({ path:f.path, content_base64:f.content_base64, mime:f.mime })),
         previous_outputs: currentProject.outputs.map(f => ({ path:f.path, content: window.App.b64ToText(f.content_base64) })),
         progress_steps: steps.map(s => ({ key:s.key, label:s.label }))
       };
-      window.App.postWebhook(window.App.WEBHOOK_GENERATE, payload).catch(()=>{});
+      window.App.postWebhook(window.App.WEBHOOK_GENERATE, payload).catch(e => ctrl.pushLog('webhook POST error: ' + e.message));
+      ctrl.pushLog('webhook POST enviado (' + JSON.stringify(payload).length + ' bytes)');
 
-      // Poll both progress and draft
+      // Poll progress + draft in parallel
       const start = Date.now(); const maxMs = 180000;
-      let result = null;
-      let lastProgressText = '';
+      let result = null; let lastProgressText = '';
       while (Date.now() - start < maxMs) {
         await new Promise(r => setTimeout(r, 1000));
-        // Fetch progress file (may not exist yet — that's OK, heuristic keeps running)
         try {
           const r = await fetch('./progress/'+jobId+'.json?t='+Date.now(), { cache:'no-cache' });
           if (r.ok) {
             const t = await r.text();
             if (t && t !== lastProgressText) {
               lastProgressText = t;
-              try {
-                const data = JSON.parse(t);
-                if (data && Array.isArray(data.steps)) ctrl.applyRemote(data.steps);
-              } catch(e){}
+              const data = tryParseLenient(t);
+              if (data) {
+                if (Array.isArray(data.steps)) ctrl.applyRemote(data.steps);
+                if (data.plan) ctrl.applyPlan(data.plan);
+                ctrl.pushLog('progress/ actualizado: ' + (data.steps ? data.steps.length + ' pasos' : 'sin pasos'));
+              }
             }
           }
         } catch(e){}
-        // Fetch draft every 4 ticks
         if ((Date.now() - start) % 4000 < 1100) {
           try {
             const r = await fetch('./drafts/'+jobId+'.json?t='+Date.now(), { cache:'no-cache' });
             if (r.ok) {
-              const data = await r.json();
+              const raw = await r.text();
+              ctrl.pushLog('drafts/ recibido ('+raw.length+' bytes)');
+              const data = tryParseLenient(raw);
               if (data && (data.files || data.error)) { result = data; break; }
+              else if (raw && !data) ctrl.pushLog('drafts/: JSON no parseable, seguimos esperando');
             }
           } catch(e){}
         }
       }
 
       if (!result) {
-        ctrl.error('Tiempo de espera agotado.');
+        ctrl.error('Tiempo de espera agotado (180 s).');
         status.textContent = 'Se agotó el tiempo de espera. Vuelve a intentarlo.'; status.className='status error';
         return;
       }
@@ -696,13 +754,69 @@
         return;
       }
 
-      ctrl.done();
-      AppGen.applyOutputFiles(result.files || []);
+      // Apply plan from LLM if present
+      if (result.plan || (Array.isArray(result.steps) && result.steps[0] && result.steps[0].label)) {
+        ctrl.applyPlan(result.plan || { steps: result.steps, summary: result.summary });
+      } else {
+        ctrl.pushLog('plan ausente en respuesta del modelo (fallback a pasos genéricos)');
+      }
+      if (result.summary) ctrl.pushLog('resumen: ' + result.summary);
+
+      // Validate files array
+      if (!Array.isArray(result.files)) {
+        ctrl.error('La respuesta no incluye la lista de archivos.');
+        status.textContent = 'Respuesta inválida'; status.className='status error';
+        return;
+      }
+
+      // Animate remaining pending steps to create Manus feel
+      await ctrl.animateToEnd();
+
+      // Apply output files (this is the real "save")
+      AppGen.applyOutputFiles(result.files);
+      ctrl.pushLog('archivos aplicados: ' + result.files.length);
+
+      // Summary detail for last step
+      const totalBytes = currentProject.outputs.reduce((s,f)=>s+fileSize(f.content_base64),0);
+      const lastDetail = result.files.length + ' archivo(s) · ' + humanSize(totalBytes);
+
       AppGen.addMessage('assistant', result.message || 'Cambios aplicados.');
-      status.textContent = 'Listo.'; status.className='status success';
       AppGen.renderProject();
 
-      window.App.pushDbAndSync(null).catch(()=>{});
+      // Now the tricky part: db_upload push + ETag poll up to 60s
+      status.textContent = 'Guardando…'; status.className='status pending';
+      ctrl.updateStepDetail(ctrl.state().length - 1, 'Guardado local · sincronizando…');
+
+      const pushResult = await window.App.pushDbAndSync(null);
+      if (pushResult.synced) {
+        ctrl.pushLog('sync remoto confirmado etag=' + (pushResult.etag || '?'));
+        ctrl.finalizeLast({ status:'done', detail: lastDetail + ' · sincronizado ✓' });
+        ctrl.done();
+        status.textContent = 'Listo.'; status.className='status success';
+      } else {
+        ctrl.pushLog('sync remoto no confirmado (' + (pushResult.error || 'timeout') + '). Guardado local OK.');
+        ctrl.finalizeLast({
+          status: 'warning',
+          detail: lastDetail + ' · guardado local OK · sincronización remota pendiente',
+          onRetry: async (stateArr, idx, pushLog, rerender) => {
+            pushLog('reintentando db_upload…');
+            const res2 = await window.App.pushDbAndSync(null);
+            if (res2.synced) {
+              stateArr[idx].status = 'done';
+              stateArr[idx].detail = lastDetail + ' · sincronizado ✓ (tras reintento)';
+              stateArr[idx].ended_at = Date.now();
+              pushLog('reintento OK etag=' + (res2.etag || '?'));
+            } else {
+              stateArr[idx].status = 'warning';
+              stateArr[idx].detail = lastDetail + ' · sincronización remota sigue pendiente';
+              pushLog('reintento falló: ' + (res2.error || 'timeout'));
+            }
+            rerender();
+          }
+        });
+        // Don't mark overall as error — the project is saved locally.
+        status.textContent = 'Guardado local. Sincronización remota pendiente.'; status.className='status';
+      }
     },
 
     async downloadZip() {
@@ -729,8 +843,7 @@
       run('UPDATE projects SET published_slug = ? WHERE id = ?', [slug, currentProject.id]);
       currentProject.published_slug = slug;
       AppGen.renderProject();
-      status.innerHTML = 'Publicado. Estará disponible en <a href="./sites/'+escHTML(slug)+'/" target="_blank">./sites/'+escHTML(slug)+'/</a> en aprox. 60 s.';
-      status.className='status success';
+      status.innerHTML = 'Publicado. Estará disponible en <a href="./sites/'+escHTML(slug)+'/" target="_blank">./sites/'+escHTML(slug)+'/</a> en aprox. 60 s.'; status.className='status success';
       window.App.pushDbAndSync(null).catch(()=>{});
     },
 
@@ -739,9 +852,7 @@
       let rows;
       if (s.role === 'admin') rows = exec('SELECT p.id, p.title, p.username, p.updated_at, p.published_slug, (SELECT COUNT(*) FROM project_messages WHERE project_id=p.id) AS msg_count FROM projects p ORDER BY p.updated_at DESC');
       else rows = exec('SELECT p.id, p.title, p.username, p.updated_at, p.published_slug, (SELECT COUNT(*) FROM project_messages WHERE project_id=p.id) AS msg_count FROM projects p WHERE p.username = ? ORDER BY p.updated_at DESC', [s.username]);
-      const empty = q('#history-empty');
-      const table = q('#history-table');
-      const tbody = q('#history-table tbody');
+      const empty = q('#history-empty'); const table = q('#history-table'); const tbody = q('#history-table tbody');
       if (!tbody) return;
       if (rows.length === 0) { empty.style.display=''; table.style.display='none'; return; }
       empty.style.display='none'; table.style.display='';
@@ -749,9 +860,7 @@
         const pub = r.published_slug ? ('<a href="./sites/'+escHTML(r.published_slug)+'/" target="_blank">'+escHTML(r.published_slug)+'</a>') : '<span class="muted">—</span>';
         return '<tr><td>'+escHTML(r.title||'(sin título)')+'</td><td>'+escHTML(r.username||'')+'</td><td>'+escHTML(window.AppI18n.formatDate(r.updated_at))+'</td><td>'+escHTML(r.msg_count||0)+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Abrir</button></td></tr>';
       }).join('');
-      all('.history-open').forEach(btn => {
-        btn.addEventListener('click', () => AppGen.loadProject(btn.getAttribute('data-id')));
-      });
+      all('.history-open').forEach(btn => { btn.addEventListener('click', () => AppGen.loadProject(btn.getAttribute('data-id'))); });
     }
   };
   window.AppGen = AppGen;
@@ -778,8 +887,7 @@
     if (e.target && e.target.id === 'chat-form') {
       e.preventDefault();
       if (!window.App.session || window.App.session.role !== 'admin') return;
-      const ta = q('#chat-input');
-      const text = (ta.value||'').trim();
+      const ta = q('#chat-input'); const text = (ta.value||'').trim();
       if (!text) return;
       ta.value = '';
       AppGen.sendMessage(text);
@@ -792,20 +900,9 @@
       e.target.value = '';
     }
   });
-  document.addEventListener('dragover', (e) => {
-    const dz = e.target.closest && e.target.closest('#drop-zone');
-    if (dz) { e.preventDefault(); dz.classList.add('drag'); }
-  });
-  document.addEventListener('dragleave', (e) => {
-    const dz = e.target.closest && e.target.closest('#drop-zone');
-    if (dz) dz.classList.remove('drag');
-  });
-  document.addEventListener('drop', (e) => {
-    const dz = e.target.closest && e.target.closest('#drop-zone');
-    if (!dz) return;
-    e.preventDefault(); dz.classList.remove('drag');
-    if (e.dataTransfer && e.dataTransfer.files) Array.from(e.dataTransfer.files).forEach(f => AppGen.addInputFile(f));
-  });
+  document.addEventListener('dragover', (e) => { const dz = e.target.closest && e.target.closest('#drop-zone'); if (dz) { e.preventDefault(); dz.classList.add('drag'); } });
+  document.addEventListener('dragleave', (e) => { const dz = e.target.closest && e.target.closest('#drop-zone'); if (dz) dz.classList.remove('drag'); });
+  document.addEventListener('drop', (e) => { const dz = e.target.closest && e.target.closest('#drop-zone'); if (!dz) return; e.preventDefault(); dz.classList.remove('drag'); if (e.dataTransfer && e.dataTransfer.files) Array.from(e.dataTransfer.files).forEach(f => AppGen.addInputFile(f)); });
 })();
 
 </script></body></html>
