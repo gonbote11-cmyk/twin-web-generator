@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AI Website Generator</title>
-  <meta name="description" content="Generate and publish static websites from prompts.">
+  <meta name="description" content="Build websites by chatting with AI.">
   <style>
     :root {
       --bg: #0b0b12;
@@ -18,603 +18,414 @@
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
+      --user-bubble: #3b2a68;
+      --assistant-bubble: #1a1a28;
       --radius: 8px;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; }
 
-    html, body {
-      height: 100%;
+    html, body, #view-app { height: 100vh; margin: 0; }
+
+    body {
       background: var(--bg);
       color: var(--text);
       font-family: var(--font);
-      font-size: 15px;
-      line-height: 1.6;
+      font-size: 14px;
     }
 
-    /* ── Login View ── */
-    #view-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
-    }
+    section[id^="view-"] { display: none; }
+    #view-login { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
 
+    /* Login card */
     .login-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
       padding: 40px 36px;
       width: 100%;
       max-width: 380px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
     }
+    .login-card h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+    .login-card h1 span { color: var(--accent); }
+    .login-card p { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    .login-card label { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; font-size: 13px; color: var(--muted); }
+    .login-card input { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 9px 12px; font-family: var(--font); font-size: 14px; width: 100%; }
+    .login-card input:focus { outline: none; border-color: var(--accent); }
+    .login-card .btn { width: 100%; justify-content: center; padding: 10px 16px; font-size: 14px; margin-top: 4px; }
+    .error { color: var(--danger); margin-top: 8px; font-size: 13px; }
 
-    .login-card .login-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .login-card .login-subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .login-card form { display: flex; flex-direction: column; gap: 14px; }
-
-    .login-card label {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .login-card input[type="text"],
-    .login-card input[type="password"] {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 15px;
-      padding: 9px 12px;
-      outline: none;
-      transition: border-color 0.15s;
-      font-family: var(--font);
-    }
-
-    .login-card input:focus {
-      border-color: var(--accent);
-    }
-
-    /* ── App View ── */
+    /* App layout */
     #view-app {
       display: grid;
       grid-template-columns: 240px 1fr;
-      min-height: 100vh;
     }
 
-    /* ── Sidebar ── */
     .sidebar {
       background: #0a0a10;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
+      padding: 24px 16px;
+      gap: 20px;
+      overflow: hidden;
     }
 
-    .sidebar-logo {
-      padding: 24px 20px 20px;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      letter-spacing: -0.01em;
-    }
+    .logo { font-weight: 700; font-size: 18px; letter-spacing: -0.02em; color: var(--text); }
+    .logo::first-letter { color: var(--accent); }
 
-    .sidebar-logo .logo-accent {
-      color: var(--accent);
-    }
-
-    .sidebar nav {
-      flex: 1;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .sidebar nav a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 6px;
+    nav { display: flex; flex-direction: column; gap: 4px; }
+    nav a {
+      display: block;
+      padding: 10px 12px;
       color: var(--muted);
       text-decoration: none;
+      border-radius: 6px;
       font-size: 14px;
-      font-weight: 500;
-      transition: background 0.12s, color 0.12s;
-      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
     }
+    nav a.active, nav a:hover { background: var(--surface-2); color: var(--text); }
 
-    .sidebar nav a:hover {
-      background: var(--surface-2);
-      color: var(--text);
-    }
+    .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 0; }
 
-    .sidebar nav a.active {
-      background: rgba(139,92,246,0.15);
-      color: var(--accent);
-    }
-
-    .sidebar-bottom {
-      padding: 16px 12px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    #user-chip {
+    .user-chip {
+      padding: 10px 12px;
       font-size: 13px;
       color: var(--muted);
-      padding: 6px 10px;
-      background: var(--surface-2);
-      border-radius: 6px;
       border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 8px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    #signout-btn {
-      width: 100%;
-      text-align: center;
-    }
-
-    /* ── Main ── */
     .main {
-      padding: 32px;
-      overflow-y: auto;
-      min-height: 100vh;
+      padding: 24px 32px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
     }
 
-    .panel {
-      max-width: 960px;
+    .panel { max-width: 1400px; width: 100%; }
+    .panel h1 { margin: 0 0 16px; font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+
+    .panel-chat {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 48px);
+    }
+    .panel-chat h1 { margin: 0 0 4px; }
+
+    .project-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
     }
 
-    .panel h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
+    .chip {
+      background: var(--surface-2);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: monospace;
     }
 
-    .muted { color: var(--muted); font-size: 14px; }
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
 
-    .panel > .muted { margin-bottom: 24px; }
-
-    /* ── Guard ── */
-    .guard {
+    .chat-col, .preview-col {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 20px;
-      color: var(--muted);
-      font-size: 14px;
-      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    /* ── Gen Form ── */
-    #gen-form {
-      margin-top: 24px;
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    #gen-form label {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+    .msg {
+      padding: 10px 14px;
+      border-radius: 10px;
+      max-width: 90%;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .msg.user { background: var(--user-bubble); align-self: flex-end; }
+    .msg.assistant { background: var(--assistant-bubble); border: 1px solid var(--border); align-self: flex-start; }
+    .msg.system { background: transparent; color: var(--muted); font-size: 12px; align-self: center; text-align: center; }
+
+    .file-chips { padding: 0 16px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+    .file-chip {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--text);
+    }
+    .file-chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 0; line-height: 1; }
+    .file-chip button:hover { color: var(--danger); }
+
+    .chat-form {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    #gen-form textarea {
-      background: var(--surface);
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      display: block;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .drop-zone.drag { border-color: var(--accent); background: var(--surface-2); }
+    .drop-zone:hover { border-color: var(--accent); }
+
+    #chat-input {
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
       color: var(--text);
+      border-radius: 6px;
+      padding: 10px;
+      resize: vertical;
       font-family: var(--font);
       font-size: 14px;
-      padding: 12px 14px;
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.15s;
-      min-height: 120px;
+      width: 100%;
     }
+    #chat-input:focus { outline: none; border-color: var(--accent); }
 
-    #gen-form textarea:focus {
-      border-color: var(--accent);
-    }
+    .chat-actions { display: flex; gap: 12px; align-items: center; }
 
-    .gen-actions {
-      display: flex;
-      align-items: center;
-      gap: 0;
-    }
-
-    /* ── Tabs ── */
+    /* Tabs */
     .tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
-      margin-top: 28px;
-      gap: 0;
+      padding: 0 8px;
+      flex-shrink: 0;
     }
-
     .tab {
       background: transparent;
       border: none;
-      border-bottom: 2px solid transparent;
       color: var(--muted);
-      padding: 8px 16px;
+      padding: 10px 16px;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
       font-family: var(--font);
+      border-bottom: 2px solid transparent;
       margin-bottom: -1px;
-      transition: color 0.12s;
+      transition: color 0.15s;
     }
-
     .tab:hover { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom: 2px solid var(--accent); }
 
-    .tab.active {
-      color: var(--text);
-      border-bottom: 2px solid var(--accent);
-    }
+    .tab-content { flex: 1; overflow: auto; padding: 16px; }
 
-    .tab-content { margin-top: 16px; }
-
-    /* ── Preview iframe ── */
     #preview-frame {
       width: 100%;
-      height: 600px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      height: 100%;
+      min-height: 500px;
+      border: 0;
+      border-radius: 6px;
       background: #fff;
-      display: block;
     }
 
-    /* ── Code view ── */
-    .file-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .file-tabs button {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
+    .files-section { margin-bottom: 20px; }
+    .files-section h3 {
+      font-size: 13px;
       color: var(--muted);
-      font-family: var(--font);
-      font-size: 12px;
-      padding: 3px 12px;
-      cursor: pointer;
-      transition: background 0.12s, color 0.12s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 8px;
+      font-weight: 600;
     }
 
-    .file-tabs button:hover {
-      background: var(--border);
+    .file-list { display: flex; flex-direction: column; gap: 4px; }
+    .file-item {
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: var(--text);
     }
+    .file-item:hover { background: var(--surface-2); }
+    .file-item .size { color: var(--muted); font-size: 11px; }
 
-    .file-tabs button.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
+    .file-tabs { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
+    .file-tabs .file-tab {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--muted);
+      font-family: monospace;
     }
+    .file-tabs .file-tab.active { color: var(--text); border-color: var(--accent); }
 
+    pre { margin: 0; }
     pre code {
       background: #0a0a10;
       padding: 16px;
-      border-radius: var(--radius);
+      border-radius: 8px;
       overflow: auto;
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-family: monospace;
       font-size: 13px;
       color: #d4d4d8;
-      max-height: 500px;
       display: block;
       white-space: pre;
-      border: 1px solid var(--border);
     }
 
-    /* ── Actions tab ── */
-    .action-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .action-row { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .action-row label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+    .action-row input[type="text"] { padding: 8px 10px; font-size: 13px; border-radius: 6px; }
 
-    .action-row:last-child { border-bottom: none; }
-
-    .action-row label {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-      width: 100%;
-    }
-
-    .action-row input[type="text"] {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: var(--font);
-      padding: 7px 12px;
-      outline: none;
-      transition: border-color 0.15s;
-      min-width: 220px;
-    }
-
-    .action-row input[type="text"]:focus {
-      border-color: var(--accent);
-    }
-
-    /* ── Buttons ── */
+    /* Buttons */
     .btn {
-      padding: 8px 20px;
+      padding: 8px 16px;
       border-radius: 6px;
       border: 1px solid var(--border);
       background: var(--surface-2);
       color: var(--text);
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
       font-family: var(--font);
-      transition: background 0.12s, border-color 0.12s, color 0.12s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
       white-space: nowrap;
     }
+    .btn:hover { background: var(--surface); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-ghost { background: transparent; border-color: var(--border); }
+    .btn-ghost:hover { background: var(--surface-2); }
+    .btn-danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+    .btn-danger:hover { background: rgba(239,68,68,0.08); }
 
-    .btn:hover {
-      background: var(--border);
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      border-color: var(--accent-hover);
-    }
-
-    .btn-danger {
-      background: transparent;
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
-    .btn-danger:hover {
-      background: rgba(239,68,68,0.1);
-    }
-
-    /* ── Status / Error ── */
-    .error { color: var(--danger); margin-top: 8px; font-size: 13px; }
-
-    .status {
-      margin-left: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
+    /* Status / Badge */
+    .status { margin-left: 8px; color: var(--muted); font-size: 13px; }
     .status.success { color: var(--success); }
     .status.error { color: var(--danger); }
+    .status.pending::before { content: "⏳ "; }
 
-    /* ── Warning ── */
+    .badge {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .badge.pending { color: var(--warning); border-color: var(--warning); }
+    .badge.synced { color: var(--success); border-color: var(--success); }
+    .badge.error { color: var(--danger); border-color: var(--danger); }
+
+    /* Warning / Guard */
     .warning {
       background: #3f2d0a;
       border: 1px solid var(--warning);
       color: #fde68a;
       padding: 12px 16px;
-      border-radius: var(--radius);
+      border-radius: 8px;
       margin-bottom: 16px;
       font-size: 13px;
       line-height: 1.5;
     }
 
-    /* ── Card ── */
+    .guard {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--surface);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    /* Card (admin form) */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      padding: 24px;
-      border-radius: var(--radius);
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      max-width: 500px;
     }
-
-    .card h3 {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .card label {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .card input[type="text"],
-    .card input[type="password"],
-    .card select {
-      background: var(--surface-2);
+    .card h3 { margin: 0 0 16px; font-size: 15px; font-weight: 600; }
+    .card label { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; font-size: 13px; color: var(--muted); }
+    .card input, .card select {
+      background: var(--bg);
       border: 1px solid var(--border);
+      color: var(--text);
       border-radius: 6px;
-      color: var(--text);
+      padding: 8px 10px;
       font-family: var(--font);
-      font-size: 14px;
-      padding: 8px 12px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    .card input:focus,
-    .card select:focus {
-      border-color: var(--accent);
-    }
-
-    .card select option {
-      background: var(--surface-2);
-    }
-
-    /* ── Tables ── */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      text-align: left;
-      font-weight: 600;
       font-size: 13px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
     }
+    .card input:focus, .card select:focus { outline: none; border-color: var(--accent); }
 
-    td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text);
-      vertical-align: middle;
-    }
-
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13px; }
+    th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
     tr:hover td { background: var(--surface-2); }
 
-    #history-table,
-    #users-table {
-      margin-top: 16px;
-      background: var(--surface);
+    /* Generic inputs outside cards */
+    input, textarea, select {
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: var(--font);
+      font-size: 14px;
     }
 
-    #history-table td:nth-child(3),
-    #history-table th:nth-child(3) {
-      max-width: 320px;
-    }
+    .muted { color: var(--muted); font-size: 13px; }
 
-    td .truncate {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 300px;
-      display: block;
-    }
-
-    /* ── History badge ── */
-    .badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .badge-success {
-      background: rgba(16,185,129,0.15);
-      color: var(--success);
-    }
-
-    .badge-muted {
-      background: var(--surface-2);
-      color: var(--muted);
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 719px) {
-      #view-app {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-      }
-
-      .sidebar {
-        position: relative;
-        height: auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .sidebar-logo {
-        padding: 14px 16px;
-        border-bottom: none;
-        border-right: 1px solid var(--border);
-        font-size: 15px;
-      }
-
-      .sidebar nav {
-        flex-direction: row;
-        padding: 8px 12px;
-        align-items: center;
-        flex: 1;
-        gap: 4px;
-      }
-
-      .sidebar-bottom {
-        flex-direction: row;
-        align-items: center;
-        width: 100%;
-        padding: 8px 12px;
-        border-top: 1px solid var(--border);
-        gap: 8px;
-      }
-
-      #user-chip { flex: 1; }
-      #signout-btn { width: auto; }
-
-      .main { padding: 20px 16px; }
+    /* Responsive */
+    @media (max-width: 900px) {
+      #view-app { grid-template-columns: 1fr; }
+      .chat-layout { grid-template-columns: 1fr; }
+      .panel-chat { height: auto; }
+      .sidebar { flex-direction: row; padding: 12px 16px; gap: 12px; align-items: center; }
+      .sidebar-bottom { margin-top: 0; margin-left: auto; flex-direction: row; align-items: center; }
+      .user-chip { margin-bottom: 0; }
     }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
@@ -623,130 +434,138 @@
 </head>
 <body>
 
-  <!-- ════════════════════════════════════════
-       LOGIN VIEW
-  ═════════════════════════════════════════ -->
+  <!-- VIEW: Login -->
   <section id="view-login">
     <div class="login-card">
-      <div class="login-title">AI Website Generator</div>
-      <div class="login-subtitle">Sign in to continue</div>
-      <form id="login-form" autocomplete="on">
+      <h1><span>AI</span> Website Generator</h1>
+      <p>Sign in to continue</p>
+      <form id="login-form" autocomplete="off" novalidate>
         <label>
           Username
-          <input type="text" name="username" autocomplete="username" required spellcheck="false">
+          <input type="text" name="username" autocomplete="username" required placeholder="Enter username">
         </label>
         <label>
           Password
-          <input type="password" name="password" autocomplete="current-password" required>
+          <input type="password" name="password" autocomplete="current-password" required placeholder="Enter password">
         </label>
-        <button type="submit" class="btn btn-primary" style="margin-top:4px;">Sign in</button>
-        <div id="login-error" class="error"></div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
       </form>
+      <div id="login-error" class="error"></div>
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════
-       APP VIEW
-  ═════════════════════════════════════════ -->
-  <section id="view-app" style="display:none;">
+  <!-- VIEW: App -->
+  <section id="view-app">
 
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-logo">
-        <span><span class="logo-accent">AI</span> Site Gen</span>
-      </div>
+      <div class="logo">AI Site Gen</div>
+
       <nav>
         <a href="#generate" data-nav="generate">Generate</a>
         <a href="#history" data-nav="history">History</a>
-        <a href="#admin" data-nav="admin" id="admin-link" style="display:none;">Admin</a>
+        <a href="#admin" data-nav="admin" id="admin-link" style="display:none">Admin</a>
       </nav>
+
       <div class="sidebar-bottom">
-        <div id="user-chip"></div>
-        <button id="signout-btn" class="btn">Sign out</button>
+        <div id="user-chip" class="user-chip"></div>
+        <button id="signout-btn" class="btn btn-ghost">Sign out</button>
       </div>
     </aside>
 
-    <!-- Main content -->
-    <main class="main">
+    <!-- Main -->
+    <div class="main">
 
-      <!-- ── Generate Panel ── -->
-      <div id="panel-generate" class="panel" style="display:none;">
-        <h1>Generate a website</h1>
-        <p class="muted">Describe what you want to build. The AI will choose the best structure.</p>
+      <!-- Panel: Generate -->
+      <div id="panel-generate" class="panel panel-chat" style="display:none">
+        <h1 id="project-title">New project</h1>
+        <div class="project-meta">
+          <span id="project-id-chip" class="chip">—</span>
+          <button id="new-project-btn" class="btn">New project</button>
+        </div>
 
-        <div id="gen-guard-user" class="guard" style="display:none;">
+        <div id="gen-guard-user" class="guard" style="display:none">
           Only administrators can generate sites. Ask an admin for access.
         </div>
 
-        <form id="gen-form" style="display:none;">
-          <label for="gen-prompt">Prompt</label>
-          <textarea
-            id="gen-prompt"
-            name="prompt"
-            rows="6"
-            placeholder="e.g. Landing page for a coffee shop with menu and reservation form"
-            required
-          ></textarea>
-          <div class="gen-actions">
-            <button type="submit" class="btn btn-primary" id="gen-submit">Generate</button>
-            <span id="gen-status" class="status"></span>
-          </div>
-        </form>
+        <div class="chat-layout">
 
-        <div id="gen-result" style="display:none;">
-          <div class="tabs">
-            <button data-tab="preview" class="tab active">Preview</button>
-            <button data-tab="code" class="tab">Code</button>
-            <button data-tab="actions" class="tab">Actions</button>
-          </div>
+          <!-- Chat column -->
+          <section class="chat-col">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div id="file-chips" class="file-chips"></div>
+            <form id="chat-form" class="chat-form">
+              <label class="drop-zone" id="drop-zone">
+                <input type="file" id="file-input" multiple hidden accept="image/*,.txt,.md,.html,.css,.js,.json,.zip,.pdf,.svg">
+                <span>Drop files or click to upload</span>
+              </label>
+              <textarea id="chat-input" name="message" rows="3" placeholder="Describe what you want to build or change…"></textarea>
+              <div class="chat-actions">
+                <button type="submit" id="chat-send" class="btn btn-primary">Send</button>
+                <span id="gen-status" class="status"></span>
+              </div>
+            </form>
+          </section>
 
-          <!-- Preview tab -->
-          <div class="tab-content" id="tab-preview">
-            <iframe
-              id="preview-frame"
-              sandbox="allow-scripts"
-              title="Preview"
-            ></iframe>
-          </div>
-
-          <!-- Code tab -->
-          <div class="tab-content" id="tab-code" style="display:none;">
-            <div class="file-tabs" id="file-tabs"></div>
-            <pre><code id="code-view"></code></pre>
-          </div>
-
-          <!-- Actions tab -->
-          <div class="tab-content" id="tab-actions" style="display:none;">
-            <div class="action-row">
-              <button id="download-zip-btn" class="btn">Download ZIP</button>
-              <span class="muted">Save all files as a ZIP archive.</span>
+          <!-- Preview column -->
+          <section class="preview-col">
+            <div class="tabs">
+              <button data-tab="preview" class="tab active">Preview</button>
+              <button data-tab="files" class="tab">Files</button>
+              <button data-tab="code" class="tab">Code</button>
+              <button data-tab="actions" class="tab">Actions</button>
             </div>
-            <div class="action-row">
-              <label for="publish-slug">Slug (lowercase letters, digits, hyphens):</label>
-              <input
-                type="text"
-                id="publish-slug"
-                placeholder="my-coffee-shop"
-                pattern="[a-z0-9-]+"
-                spellcheck="false"
-              >
-              <button id="publish-btn" class="btn btn-primary">Publish</button>
-              <span id="publish-status" class="status"></span>
+
+            <div class="tab-content" id="tab-preview">
+              <iframe id="preview-frame" sandbox="allow-scripts" title="Preview"></iframe>
             </div>
-          </div>
+
+            <div class="tab-content" id="tab-files" style="display:none">
+              <div class="files-section">
+                <h3>Inputs</h3>
+                <div id="inputs-list" class="file-list muted">No inputs uploaded yet.</div>
+              </div>
+              <div class="files-section">
+                <h3>Outputs</h3>
+                <div id="outputs-list" class="file-list muted">No generated files yet.</div>
+              </div>
+            </div>
+
+            <div class="tab-content" id="tab-code" style="display:none">
+              <div id="code-file-tabs" class="file-tabs"></div>
+              <pre><code id="code-view"></code></pre>
+            </div>
+
+            <div class="tab-content" id="tab-actions" style="display:none">
+              <div class="action-row">
+                <button id="download-zip-btn" class="btn">Download ZIP</button>
+                <span class="muted">Output files only.</span>
+              </div>
+              <div class="action-row">
+                <label>
+                  Slug
+                  <input type="text" id="publish-slug" placeholder="my-site" pattern="[a-z0-9-]+">
+                </label>
+                <button id="publish-btn" class="btn btn-primary">Publish</button>
+                <span id="publish-status" class="status"></span>
+              </div>
+            </div>
+          </section>
+
         </div>
       </div>
 
-      <!-- ── History Panel ── -->
-      <div id="panel-history" class="panel" style="display:none;">
-        <h1>History</h1>
-        <div id="history-guard-empty" class="muted" style="margin-top:16px;">No generations yet.</div>
-        <table id="history-table" style="display:none;">
+      <!-- Panel: History -->
+      <div id="panel-history" class="panel" style="display:none">
+        <h1>Your projects</h1>
+        <div id="history-empty" class="muted">No projects yet.</div>
+        <table id="history-table">
           <thead>
             <tr>
-              <th>When</th>
+              <th>Title</th>
               <th>User</th>
-              <th>Prompt</th>
+              <th>Updated</th>
+              <th>Messages</th>
               <th>Published</th>
               <th></th>
             </tr>
@@ -755,23 +574,19 @@
         </table>
       </div>
 
-      <!-- ── Admin Panel ── -->
-      <div id="panel-admin" class="panel" style="display:none;">
+      <!-- Panel: Admin -->
+      <div id="panel-admin" class="panel" style="display:none">
         <h1>User management</h1>
-
-        <div class="warning">
-          Changes here are committed to the public repo. This is a demo-grade auth system — do not use in production.
-        </div>
-
+        <div class="warning">Changes here are committed to the public repo. This is a demo-grade auth system — do not use in production.</div>
         <form id="add-user-form" class="card">
           <h3>Create user</h3>
           <label>
             Username
-            <input name="username" type="text" required autocomplete="off" spellcheck="false">
+            <input name="username" type="text" required>
           </label>
           <label>
             Password
-            <input name="password" type="password" required autocomplete="new-password">
+            <input name="password" type="password" required>
           </label>
           <label>
             Role
@@ -780,12 +595,10 @@
               <option value="admin">admin</option>
             </select>
           </label>
-          <div style="display:flex;align-items:center;gap:0;">
-            <button type="submit" class="btn btn-primary">Create user</button>
-            <div id="admin-status" class="status"></div>
-          </div>
+          <button type="submit" class="btn btn-primary">Create user</button>
+          <div id="admin-sync-badge" class="badge">idle</div>
+          <div id="admin-status" class="status"></div>
         </form>
-
         <table id="users-table">
           <thead>
             <tr>
@@ -799,12 +612,9 @@
         </table>
       </div>
 
-    </main>
+    </div>
   </section>
 
-  <!-- ════════════════════════════════════════
-       Script placeholders
-  ═════════════════════════════════════════ -->
   <script id="app-core">
 
 (function(){
@@ -812,21 +622,49 @@
   const WEBHOOK_GENERATE  = "https://build.twin.so/triggers/b4e1c04c-08b3-4b69-9ff2-622542871a6a/webhook";
   const WEBHOOK_PUBLISH   = "https://build.twin.so/triggers/c1f3389a-6101-4347-bc72-608c3e70a875/webhook";
   const SQL_WASM_URL = 'https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.wasm';
-  const BASE_PATH = '/twin-web-generator';
+  const MAX_PROJECT_BYTES = 10 * 1024 * 1024;
 
   const SEED_SQL = [
-    "CREATE TABLE users (username TEXT PRIMARY KEY, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','user')), created_at TEXT DEFAULT (datetime('now')));",
-    "CREATE TABLE generations (id TEXT PRIMARY KEY, username TEXT, prompt TEXT, files_json TEXT, published_slug TEXT, created_at TEXT DEFAULT (datetime('now')));",
-    "INSERT INTO users (username, password_hash, role) VALUES ('wilson', '$2a$10$j5URFlebAA/qxzJeBRU2GuCrjs6q2m3bsheaW0lAlXmaEu8.ZCPzu', 'admin');"
+    "CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','user')), created_at TEXT DEFAULT (datetime('now')));",
+    "INSERT OR IGNORE INTO users (username, password_hash, role) VALUES ('wilson', '$2a$10$j5URFlebAA/qxzJeBRU2GuCrjs6q2m3bsheaW0lAlXmaEu8.ZCPzu', 'admin');"
   ].join('\n');
 
-  const MIGRATE_SQL = [
-    "CREATE TABLE IF NOT EXISTS generations (id TEXT PRIMARY KEY, username TEXT, prompt TEXT, files_json TEXT, published_slug TEXT, created_at TEXT DEFAULT (datetime('now')));"
-  ].join('\n');
+  // Idempotent migrations run on every boot
+  const MIGRATIONS = [
+    "CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password_hash TEXT NOT NULL, role TEXT NOT NULL, created_at TEXT DEFAULT (datetime('now')));",
+    "CREATE TABLE IF NOT EXISTS generations (id TEXT PRIMARY KEY, username TEXT, prompt TEXT, files_json TEXT, published_slug TEXT, created_at TEXT DEFAULT (datetime('now')));",
+    "CREATE TABLE IF NOT EXISTS projects (id TEXT PRIMARY KEY, username TEXT, title TEXT, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT, published_slug TEXT);",
+    "CREATE TABLE IF NOT EXISTS project_files (project_id TEXT, path TEXT, content_base64 TEXT, mime TEXT, kind TEXT CHECK(kind IN ('input','output')), PRIMARY KEY(project_id, path, kind));",
+    "CREATE TABLE IF NOT EXISTS project_messages (id TEXT PRIMARY KEY, project_id TEXT, role TEXT CHECK(role IN ('user','assistant','system')), content TEXT, created_at TEXT DEFAULT (datetime('now')));"
+  ];
+
+  function migrateGenerationsToProjects(db) {
+    // One-time idempotent import from legacy 'generations' into 'projects'.
+    try {
+      const res = db.exec("SELECT id, username, prompt, files_json, published_slug, created_at FROM generations WHERE id NOT IN (SELECT id FROM projects)");
+      if (!res[0]) return;
+      const cols = res[0].columns;
+      res[0].values.forEach(row => {
+        const r = {}; cols.forEach((c,i) => r[c] = row[i]);
+        const pStmt = db.prepare("INSERT OR IGNORE INTO projects (id, username, title, created_at, updated_at, published_slug) VALUES (?, ?, ?, ?, ?, ?)");
+        pStmt.bind([r.id, r.username, (r.prompt||'').slice(0,80), r.created_at, r.created_at, r.published_slug]); pStmt.step(); pStmt.free();
+        const mStmt = db.prepare("INSERT OR IGNORE INTO project_messages (id, project_id, role, content, created_at) VALUES (?, ?, 'user', ?, ?)");
+        mStmt.bind([r.id + '-m0', r.id, r.prompt || '', r.created_at]); mStmt.step(); mStmt.free();
+        try {
+          const files = JSON.parse(r.files_json || '[]');
+          files.forEach(f => {
+            const b64 = btoa(unescape(encodeURIComponent(f.content || '')));
+            const fs = db.prepare("INSERT OR IGNORE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, 'text/html', 'output')");
+            fs.bind([r.id, f.path || 'index.html', b64]); fs.step(); fs.free();
+          });
+        } catch(e) {}
+      });
+    } catch(e) { /* generations table may not exist */ }
+  }
 
   window.App = {
-    db: null, SQL: null, session: null,
-    WEBHOOK_DB_UPLOAD, WEBHOOK_GENERATE, WEBHOOK_PUBLISH, BASE_PATH,
+    db: null, SQL: null, session: null, dbEtag: null, pushInFlight: false,
+    WEBHOOK_DB_UPLOAD, WEBHOOK_GENERATE, WEBHOOK_PUBLISH, MAX_PROJECT_BYTES,
 
     u8ToB64(u8) {
       let s = ''; const chunk = 0x8000;
@@ -839,20 +677,54 @@
       for (let i=0; i<bin.length; i++) out[i] = bin.charCodeAt(i);
       return out;
     },
+    textToB64(txt) { return btoa(unescape(encodeURIComponent(txt))); },
+    b64ToText(b64) { try { return decodeURIComponent(escape(atob(b64))); } catch(e) { return atob(b64); } },
     exportDb() { return window.App.u8ToB64(window.App.db.export()); },
+
     async postWebhook(url, payload) {
       const body = JSON.stringify(payload);
       try {
         const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body });
-        if (res.ok) return res.json().catch(()=>({}));
+        if (res.ok) return await res.json().catch(()=>({}));
       } catch(e){}
       await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body });
       return { queued: true };
     },
-    async pushDb() {
-      const b64 = window.App.exportDb();
-      return window.App.postWebhook(WEBHOOK_DB_UPLOAD, { db_base64: b64 });
+
+    // Fire db_upload + poll for the new db.sqlite to appear (optimistic sync).
+    // Returns a promise that resolves to { synced: true, etag } or { synced: false, error }.
+    async pushDbAndSync(statusEl) {
+      if (window.App.pushInFlight) return { synced:false, error:'push in flight' };
+      window.App.pushInFlight = true;
+      if (statusEl) { statusEl.textContent = 'Sincronizando…'; statusEl.className = 'status pending'; }
+      try {
+        const b64 = window.App.exportDb();
+        const initialEtag = window.App.dbEtag;
+        await window.App.postWebhook(WEBHOOK_DB_UPLOAD, { db_base64: b64 });
+        // Poll for new etag up to 20s
+        const start = Date.now();
+        while (Date.now() - start < 20000) {
+          await new Promise(r => setTimeout(r, 1200));
+          try {
+            const r = await fetch('./db.sqlite?t=' + Date.now(), { method:'HEAD', cache:'no-store' });
+            const et = r.headers.get('etag') || r.headers.get('last-modified') || '';
+            if (et && et !== initialEtag) {
+              window.App.dbEtag = et;
+              if (statusEl) { statusEl.textContent = 'Sincronizado'; statusEl.className = 'status success'; }
+              return { synced:true, etag:et };
+            }
+          } catch(e){}
+        }
+        if (statusEl) { statusEl.textContent = 'Guardado local. El commit remoto aún no está disponible.'; statusEl.className = 'status error'; }
+        return { synced:false, error:'timeout' };
+      } catch (e) {
+        if (statusEl) { statusEl.textContent = 'Error sincronizando: ' + e.message; statusEl.className = 'status error'; }
+        return { synced:false, error:e.message };
+      } finally {
+        window.App.pushInFlight = false;
+      }
     },
+
     loadSession() {
       try { window.App.session = JSON.parse(localStorage.getItem('session') || 'null'); }
       catch(e){ window.App.session = null; }
@@ -865,6 +737,7 @@
     seed() {
       const db = new window.App.SQL.Database();
       db.exec(SEED_SQL);
+      MIGRATIONS.forEach(m => { try { db.exec(m); } catch(e){} });
       window.App.db = db;
     },
     async boot() {
@@ -874,11 +747,12 @@
       try {
         const res = await fetch('./db.sqlite?t=' + Date.now(), { cache:'no-cache' });
         if (res.ok) {
+          window.App.dbEtag = res.headers.get('etag') || res.headers.get('last-modified') || null;
           const buf = new Uint8Array(await res.arrayBuffer());
           if (buf.length > 100) {
             window.App.db = new SQL.Database(buf);
-            // migrate: ensure generations table exists
-            try { window.App.db.exec(MIGRATE_SQL); } catch(e){ console.warn('migrate warn', e); }
+            MIGRATIONS.forEach(m => { try { window.App.db.exec(m); } catch(e) { console.warn('migrate', e); } });
+            try { migrateGenerationsToProjects(window.App.db); } catch(e){}
             loaded = true;
           }
         }
@@ -888,7 +762,6 @@
       window.App.router();
     }
   };
-
   document.addEventListener('DOMContentLoaded', () => { window.App.boot(); });
 })();
 
@@ -900,7 +773,7 @@
   function showView(id) {
     ['view-login','view-app'].forEach(v => {
       const el = document.getElementById(v);
-      if (el) el.style.display = (v === id) ? '' : 'none';
+      if (el) el.style.display = (v === id) ? ((v==='view-login')?'flex':'grid') : 'none';
     });
   }
   function showPanel(name) {
@@ -916,7 +789,6 @@
     const s = window.App.session;
     if (!s) { showView('view-login'); return; }
     showView('view-app');
-    // top-bar chip + admin link
     const chip = document.getElementById('user-chip');
     if (chip) chip.textContent = s.username + ' · ' + s.role;
     const adminLink = document.getElementById('admin-link');
@@ -926,7 +798,7 @@
     if (!NAVS.includes(target)) target = 'generate';
     if (target === 'admin' && s.role !== 'admin') target = 'generate';
     showPanel(target);
-    if (target === 'generate') window.AppGen && window.AppGen.renderGenerate();
+    if (target === 'generate') window.AppGen && window.AppGen.enterGenerate();
     else if (target === 'history') window.AppGen && window.AppGen.renderHistory();
     else if (target === 'admin') window.AppAdmin && window.AppAdmin.renderAdmin();
   }
@@ -957,6 +829,12 @@
   }
 
   const AppAdmin = {
+    setBadge(state) {
+      const b = q('#admin-sync-badge');
+      if (!b) return;
+      b.className = 'badge' + (state ? ' ' + state : '');
+      b.textContent = { idle:'idle', pending:'pending', synced:'synced ✓', error:'error' }[state] || state;
+    },
     renderAdmin() {
       if (!window.App.session || window.App.session.role !== 'admin') { location.hash = '#generate'; return; }
       const rows = exec('SELECT username, role, created_at FROM users ORDER BY username');
@@ -972,20 +850,13 @@
           const u = btn.getAttribute('data-username');
           if (!confirm('Delete user '+u+'?')) return;
           run('DELETE FROM users WHERE username = ?', [u]);
-          await AppAdmin.pushAndRefresh('User '+u+' deleted.');
+          AppAdmin.renderAdmin(); // OPTIMISTIC refresh
+          AppAdmin.setBadge('pending');
+          const status = q('#admin-status'); if (status) { status.textContent = 'User '+u+' deleted locally.'; status.className='status'; }
+          const res = await window.App.pushDbAndSync(status);
+          AppAdmin.setBadge(res.synced ? 'synced' : 'error');
         });
       });
-    },
-    async pushAndRefresh(okMsg) {
-      const status = q('#admin-status');
-      if (status) { status.textContent = 'Saving…'; status.className = 'status'; }
-      try {
-        await window.App.pushDb();
-        if (status) { status.textContent = okMsg + ' Site will refresh in ~60s.'; status.className = 'status success'; }
-        AppAdmin.renderAdmin();
-      } catch(e) {
-        if (status) { status.textContent = 'Error: '+e.message; status.className = 'status error'; }
-      }
     }
   };
   window.AppAdmin = AppAdmin;
@@ -996,13 +867,11 @@
       e.preventDefault();
       const u = q('input[name=username]', e.target).value.trim();
       const p = q('input[name=password]', e.target).value;
-      const err = q('#login-error');
-      err.textContent = '';
+      const err = q('#login-error'); err.textContent = '';
       const row = exec('SELECT password_hash, role FROM users WHERE username = ?', [u])[0];
       if (!row) { err.textContent = 'Invalid credentials'; return; }
-      const ok = dcodeIO.bcrypt.compareSync(p, row.password_hash);
-      if (!ok) { err.textContent = 'Invalid credentials'; return; }
-      window.App.saveSession({ username: u, role: row.role });
+      if (!dcodeIO.bcrypt.compareSync(p, row.password_hash)) { err.textContent = 'Invalid credentials'; return; }
+      window.App.saveSession({ username:u, role:row.role });
       location.hash = '#generate';
       window.App.router();
     }
@@ -1019,11 +888,16 @@
       const hash = dcodeIO.bcrypt.hashSync(p, 10);
       run('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [u, hash, role]);
       e.target.reset();
-      AppAdmin.pushAndRefresh('User '+u+' created.');
+      AppAdmin.renderAdmin(); // OPTIMISTIC refresh — user appears immediately
+      status.textContent = 'User '+u+' created locally. Syncing…';
+      status.className = 'status pending';
+      AppAdmin.setBadge('pending');
+      window.App.pushDbAndSync(status).then(res => {
+        AppAdmin.setBadge(res.synced ? 'synced' : 'error');
+      });
     }
   });
 
-  // Signout
   document.addEventListener('click', (e) => {
     if (e.target && e.target.id === 'signout-btn') {
       window.App.saveSession(null);
@@ -1055,7 +929,6 @@
     stmt.free();
   }
   function uuid() {
-    // RFC4122 v4 fallback
     if (crypto.randomUUID) return crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
       const r = Math.random()*16|0; const v = c==='x'?r:(r&0x3|0x8); return v.toString(16);
@@ -1064,192 +937,390 @@
   function slugify(s) {
     return String(s||'').toLowerCase().replace(/[^a-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').replace(/-{2,}/g,'-').slice(0,48) || 'site';
   }
+  function fileSize(b64) { return Math.floor((b64||'').length * 3 / 4); }
+  function humanSize(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+    return (n/(1024*1024)).toFixed(2) + ' MB';
+  }
+  function mimeFor(path, fallback) {
+    const ext = (path.split('.').pop()||'').toLowerCase();
+    const map = { html:'text/html', htm:'text/html', css:'text/css', js:'application/javascript',
+      json:'application/json', svg:'image/svg+xml', png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg',
+      webp:'image/webp', gif:'image/gif', txt:'text/plain', md:'text/markdown', pdf:'application/pdf', zip:'application/zip' };
+    return map[ext] || fallback || 'application/octet-stream';
+  }
+  function isTextMime(mime) {
+    return /^text\//.test(mime) || /javascript|json|svg|xml/.test(mime) || /markdown/.test(mime);
+  }
 
-  let currentResult = null; // { id, prompt, files:[{path,content}] }
+  let currentProject = null; // { id, title, messages:[], inputs:[], outputs:[], published_slug }
   let currentTab = 'preview';
-  let currentFileIdx = 0;
+  let currentCodeFileIdx = 0;
 
   const AppGen = {
-    renderGenerate() {
+    enterGenerate() {
       const s = window.App.session;
       const guard = q('#gen-guard-user');
-      const form = q('#gen-form');
-      const result = q('#gen-result');
-      if (s.role === 'admin') {
-        guard.style.display = 'none';
-        form.style.display = '';
-      } else {
-        guard.style.display = '';
-        form.style.display = 'none';
-        if (result) result.style.display = 'none';
+      const layout = q('#panel-generate .chat-layout');
+      if (s.role !== 'admin') {
+        if (guard) guard.style.display = '';
+        if (layout) layout.style.display = 'none';
+        q('#project-title').textContent = 'Generator is admin-only';
+        q('#project-meta') && (q('#project-meta').style.display = 'none');
+        return;
       }
+      if (guard) guard.style.display = 'none';
+      if (layout) layout.style.display = '';
+      if (!currentProject) AppGen.newProject();
+      AppGen.renderProject();
     },
-    renderHistory() {
+
+    newProject() {
+      const id = uuid();
       const s = window.App.session;
-      let rows;
-      if (s.role === 'admin') rows = exec('SELECT id, username, prompt, published_slug, created_at FROM generations ORDER BY created_at DESC');
-      else rows = exec('SELECT id, username, prompt, published_slug, created_at FROM generations WHERE username = ? ORDER BY created_at DESC', [s.username]);
-      const empty = q('#history-guard-empty');
-      const tbody = q('#history-table tbody');
-      if (!tbody) return;
-      if (rows.length === 0) { empty.style.display=''; q('#history-table').style.display='none'; return; }
-      empty.style.display = 'none';
-      q('#history-table').style.display = '';
-      tbody.innerHTML = rows.map(r => {
-        const pub = r.published_slug ? ('<a href="./sites/'+escHTML(r.published_slug)+'/" target="_blank">'+escHTML(r.published_slug)+'</a>') : '<span class="muted">—</span>';
-        return '<tr><td>'+escHTML(r.created_at)+'</td><td>'+escHTML(r.username)+'</td><td class="truncate">'+escHTML((r.prompt||'').slice(0,80))+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Open</button></td></tr>';
-      }).join('');
-      all('.history-open').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-id');
-          const row = exec('SELECT id, prompt, files_json, published_slug FROM generations WHERE id = ?', [id])[0];
-          if (!row) return;
-          let files;
-          try { files = JSON.parse(row.files_json); } catch(e) { files = [{path:'index.html', content: row.files_json || ''}]; }
-          currentResult = { id: row.id, prompt: row.prompt, files, published_slug: row.published_slug };
-          location.hash = '#generate';
-          setTimeout(() => AppGen.showResult(), 20);
-        });
-      });
+      currentProject = { id, title:'New project', messages:[], inputs:[], outputs:[], published_slug:null };
+      run('INSERT INTO projects (id, username, title, updated_at) VALUES (?, ?, ?, datetime(\'now\'))',
+          [id, s.username, currentProject.title]);
+      currentTab = 'preview'; currentCodeFileIdx = 0;
     },
-    showResult() {
-      if (window.App.session.role !== 'admin') { AppGen.renderGenerate(); return; }
-      const result = q('#gen-result');
-      if (!currentResult) { result.style.display='none'; return; }
-      result.style.display = '';
-      // Render file tabs
-      const ft = q('#file-tabs');
-      ft.innerHTML = currentResult.files.map((f, i) =>
-        '<button class="tab file-tab'+(i===currentFileIdx?' active':'')+'" data-file-idx="'+i+'">'+escHTML(f.path)+'</button>'
+
+    loadProject(id) {
+      const row = exec('SELECT id, title, published_slug FROM projects WHERE id = ?', [id])[0];
+      if (!row) return;
+      const msgs = exec('SELECT id, role, content, created_at FROM project_messages WHERE project_id = ? ORDER BY created_at', [id]);
+      const files = exec('SELECT path, content_base64, mime, kind FROM project_files WHERE project_id = ?', [id]);
+      currentProject = {
+        id: row.id,
+        title: row.title,
+        published_slug: row.published_slug,
+        messages: msgs,
+        inputs: files.filter(f => f.kind === 'input'),
+        outputs: files.filter(f => f.kind === 'output')
+      };
+      currentTab = 'preview'; currentCodeFileIdx = 0;
+      location.hash = '#generate';
+      setTimeout(()=>AppGen.renderProject(), 20);
+    },
+
+    renderProject() {
+      if (!currentProject) return;
+      q('#project-title').textContent = currentProject.title || 'Project';
+      q('#project-id-chip').textContent = currentProject.id.slice(0,8);
+      // Messages
+      const mbox = q('#chat-messages');
+      mbox.innerHTML = currentProject.messages.map(m =>
+        '<div class="msg '+escHTML(m.role)+'">'+escHTML(m.content)+'</div>'
+      ).join('') || '<div class="msg system">Start by describing the website you want.</div>';
+      mbox.scrollTop = mbox.scrollHeight;
+      // File chips (inputs)
+      const chips = q('#file-chips');
+      chips.innerHTML = currentProject.inputs.map(f =>
+        '<span class="file-chip" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+' <span class="size">'+humanSize(fileSize(f.content_base64))+'</span></span><button type="button" class="remove-input" data-path="'+escHTML(f.path)+'" title="Remove">×</button></span>'
       ).join('');
-      all('.file-tab').forEach(b => b.addEventListener('click', () => {
-        currentFileIdx = parseInt(b.getAttribute('data-file-idx'), 10) || 0;
-        AppGen.showResult();
-      }));
-      // Preview (always index.html if exists, else first)
-      const indexFile = currentResult.files.find(f => /index\.html?$/i.test(f.path)) || currentResult.files[0];
-      const previewFrame = q('#preview-frame');
-      if (currentResult.files.length === 1) {
-        previewFrame.srcdoc = indexFile.content;
+      // Files tab lists
+      const inputsList = q('#inputs-list');
+      if (currentProject.inputs.length === 0) {
+        inputsList.innerHTML = '<span class="muted">No inputs uploaded yet.</span>';
       } else {
-        // Inline assets via data URIs for multi-file preview
-        let html = indexFile.content;
-        currentResult.files.forEach(f => {
-          if (f === indexFile) return;
-          // naive replace of relative paths with data URIs
-          const ext = (f.path.split('.').pop()||'').toLowerCase();
-          const mime = ext==='css'?'text/css':ext==='js'?'application/javascript':ext==='svg'?'image/svg+xml':'text/plain';
-          const dataUri = 'data:'+mime+';base64,'+btoa(unescape(encodeURIComponent(f.content)));
-          const p = f.path.replace(/^\.?\//,'');
-          html = html.split('"'+p+'"').join('"'+dataUri+'"').split("'"+p+"'").join("'"+dataUri+"'");
-        });
-        previewFrame.srcdoc = html;
+        inputsList.className = 'file-list';
+        inputsList.innerHTML = currentProject.inputs.map(f =>
+          '<div class="file-item" data-kind="input" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>'
+        ).join('');
       }
-      // Code view
-      const codeFile = currentResult.files[currentFileIdx] || indexFile;
-      q('#code-view').textContent = codeFile.content;
-      // Tabs
+      const outList = q('#outputs-list');
+      if (currentProject.outputs.length === 0) {
+        outList.innerHTML = '<span class="muted">No generated files yet.</span>';
+      } else {
+        outList.className = 'file-list';
+        outList.innerHTML = currentProject.outputs.map(f =>
+          '<div class="file-item" data-kind="output" data-path="'+escHTML(f.path)+'"><span>'+escHTML(f.path)+'</span><span class="size">'+escHTML(f.mime||'')+' · '+humanSize(fileSize(f.content_base64))+'</span></div>'
+        ).join('');
+      }
+      // Code tab tabs
+      const ct = q('#code-file-tabs');
+      const allFiles = currentProject.outputs.concat(currentProject.inputs.filter(f => isTextMime(f.mime||mimeFor(f.path))));
+      ct.innerHTML = allFiles.map((f,i) =>
+        '<button class="file-tab'+(i===currentCodeFileIdx?' active':'')+'" data-idx="'+i+'">'+escHTML(f.path)+'</button>'
+      ).join('');
+      const codeFile = allFiles[currentCodeFileIdx];
+      q('#code-view').textContent = codeFile ? (isTextMime(codeFile.mime||mimeFor(codeFile.path)) ? window.App.b64ToText(codeFile.content_base64) : '[binary file, '+humanSize(fileSize(codeFile.content_base64))+']') : '';
+      // Tabs visibility
       all('.tabs .tab[data-tab]').forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === currentTab));
-      ['preview','code','actions'].forEach(n => {
+      ['preview','files','code','actions'].forEach(n => {
         const el = q('#tab-' + n);
         if (el) el.style.display = (n === currentTab) ? '' : 'none';
       });
-      // Prefill slug if none set
+      // Preview
+      AppGen.refreshPreview();
+      // Publish slug prefill
       const slugInput = q('#publish-slug');
-      if (slugInput && !slugInput.value) slugInput.value = slugify(currentResult.prompt);
+      if (slugInput && !slugInput.value) slugInput.value = currentProject.published_slug || slugify(currentProject.title || 'site');
       const pubStatus = q('#publish-status');
       if (pubStatus) {
-        if (currentResult.published_slug) { pubStatus.textContent = 'Already published at /sites/'+currentResult.published_slug+'/'; pubStatus.className='status success'; }
+        if (currentProject.published_slug) { pubStatus.innerHTML = 'Published at <a href="./sites/'+escHTML(currentProject.published_slug)+'/" target="_blank">./sites/'+escHTML(currentProject.published_slug)+'/</a>'; pubStatus.className='status success'; }
         else { pubStatus.textContent=''; pubStatus.className='status'; }
       }
     },
-    async generate(prompt) {
+
+    refreshPreview() {
+      const frame = q('#preview-frame');
+      if (!frame) return;
+      const index = currentProject.outputs.find(f => /(^|\/)index\.html?$/i.test(f.path)) || currentProject.outputs.find(f => /\.html?$/i.test(f.path));
+      if (!index) { frame.srcdoc = '<html><body style="background:#0b0b12;color:#8b8ba8;font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0"><div>Preview appears here after generation</div></body></html>'; return; }
+      let html = window.App.b64ToText(index.content_base64);
+      // Inline referenced relative assets as data URIs (outputs and inputs)
+      const asset = (f) => {
+        const mime = f.mime || mimeFor(f.path);
+        return 'data:' + mime + ';base64,' + f.content_base64;
+      };
+      const all = currentProject.outputs.concat(currentProject.inputs);
+      all.forEach(f => {
+        if (f === index) return;
+        const p = f.path.replace(/^\.?\//,'');
+        const du = asset(f);
+        // Replace src/href references (naive but effective for self-contained demos)
+        html = html.split('"'+p+'"').join('"'+du+'"').split("'"+p+"'").join("'"+du+"'").split('"./'+p+'"').join('"'+du+'"').split("'./"+p+"'").join("'"+du+"'");
+      });
+      frame.srcdoc = html;
+    },
+
+    totalProjectBytes() {
+      const inp = currentProject.inputs.reduce((s,f)=>s+fileSize(f.content_base64),0);
+      const out = currentProject.outputs.reduce((s,f)=>s+fileSize(f.content_base64),0);
+      return inp + out;
+    },
+
+    async addInputFile(file) {
+      // Read file as ArrayBuffer, convert to base64
+      const buf = await file.arrayBuffer();
+      const u8 = new Uint8Array(buf);
+      const b64 = window.App.u8ToB64(u8);
+      const path = file.name;
+      const mime = file.type || mimeFor(path);
+      // Remove existing same-path input
+      currentProject.inputs = currentProject.inputs.filter(f => f.path !== path);
+      const entry = { path, content_base64: b64, mime, kind:'input' };
+      // Check size cap
+      const projected = AppGen.totalProjectBytes() + fileSize(b64);
+      if (projected > window.App.MAX_PROJECT_BYTES) { alert('Project exceeds 10 MB limit. Remove files first.'); return; }
+      currentProject.inputs.push(entry);
+      run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)',
+          [currentProject.id, path, b64, mime, 'input']);
+      AppGen.renderProject();
+    },
+
+    removeInputFile(path) {
+      currentProject.inputs = currentProject.inputs.filter(f => f.path !== path);
+      run('DELETE FROM project_files WHERE project_id = ? AND path = ? AND kind = ?', [currentProject.id, path, 'input']);
+      AppGen.renderProject();
+    },
+
+    applyOutputFiles(files) {
+      // files: [{path, content, kind:'output'}] or with __deleted__
+      files.forEach(f => {
+        if (f.__deleted__) {
+          currentProject.outputs = currentProject.outputs.filter(o => o.path !== f.path);
+          run('DELETE FROM project_files WHERE project_id = ? AND path = ? AND kind = ?', [currentProject.id, f.path, 'output']);
+          return;
+        }
+        const b64 = window.App.textToB64(f.content || '');
+        const mime = mimeFor(f.path);
+        const existing = currentProject.outputs.findIndex(o => o.path === f.path);
+        const entry = { path: f.path, content_base64: b64, mime, kind:'output' };
+        if (existing >= 0) currentProject.outputs[existing] = entry;
+        else currentProject.outputs.push(entry);
+        run('INSERT OR REPLACE INTO project_files (project_id, path, content_base64, mime, kind) VALUES (?, ?, ?, ?, ?)',
+            [currentProject.id, f.path, b64, mime, 'output']);
+      });
+    },
+
+    addMessage(role, content) {
       const id = uuid();
-      const username = window.App.session.username;
+      run('INSERT INTO project_messages (id, project_id, role, content) VALUES (?, ?, ?, ?)',
+          [id, currentProject.id, role, content]);
+      currentProject.messages.push({ id, role, content, created_at: new Date().toISOString() });
+    },
+
+    async sendMessage(text) {
+      if (!text || !text.trim()) return;
       const status = q('#gen-status');
-      status.textContent = 'Generating… (30-90s)'; status.className = 'status';
-      // Fire webhook
-      await window.App.postWebhook(window.App.WEBHOOK_GENERATE, { job_id: id, prompt, username, mode: 'auto' });
-      // Poll drafts/{id}.json
-      const start = Date.now();
-      const maxMs = 180000;
-      let resultData = null;
+      AppGen.addMessage('user', text);
+      // Update project title on first user message
+      if (currentProject.messages.filter(m => m.role==='user').length === 1) {
+        const title = text.slice(0,80);
+        currentProject.title = title;
+        run('UPDATE projects SET title = ?, updated_at = datetime(\'now\') WHERE id = ?', [title, currentProject.id]);
+      } else {
+        run('UPDATE projects SET updated_at = datetime(\'now\') WHERE id = ?', [currentProject.id]);
+      }
+      AppGen.renderProject();
+      status.textContent = 'Generating…'; status.className='status pending';
+
+      // Build payload for generate webhook
+      const jobId = uuid();
+      const payload = {
+        job_id: jobId,
+        project_id: currentProject.id,
+        username: window.App.session.username,
+        prompt: text,
+        mode: 'auto',
+        history: currentProject.messages.map(m => ({ role: m.role, content: m.content })),
+        inputs: currentProject.inputs.map(f => ({ path: f.path, content_base64: f.content_base64, mime: f.mime })),
+        previous_outputs: currentProject.outputs.map(f => ({ path: f.path, content: window.App.b64ToText(f.content_base64) }))
+      };
+      await window.App.postWebhook(window.App.WEBHOOK_GENERATE, payload);
+
+      // Poll for drafts/{jobId}.json
+      const start = Date.now(); const maxMs = 180000;
+      let result = null;
       while (Date.now() - start < maxMs) {
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, 4000));
         const elapsed = Math.round((Date.now()-start)/1000);
-        status.textContent = 'Generating… ' + elapsed + 's';
+        status.textContent = 'Generating… ' + elapsed + 's'; status.className='status pending';
         try {
-          const res = await fetch('./drafts/'+id+'.json?t='+Date.now(), { cache: 'no-cache' });
+          const res = await fetch('./drafts/'+jobId+'.json?t='+Date.now(), { cache:'no-cache' });
           if (res.ok) {
             const data = await res.json();
-            if (data && data.files) { resultData = data; break; }
-            if (data && data.error) { throw new Error(data.error); }
+            if (data && (data.files || data.error)) { result = data; break; }
           }
-        } catch(e) { /* keep polling */ }
+        } catch(e){}
       }
-      if (!resultData) { status.textContent = 'Timeout waiting for generation. Try again.'; status.className='status error'; return; }
-      // Save in history
-      run('INSERT INTO generations (id, username, prompt, files_json) VALUES (?, ?, ?, ?)',
-          [id, username, prompt, JSON.stringify(resultData.files)]);
-      await window.App.pushDb().catch(()=>{});
-      currentResult = { id, prompt, files: resultData.files, published_slug: null };
-      currentTab = 'preview'; currentFileIdx = 0;
-      status.textContent = 'Ready.'; status.className = 'status success';
-      AppGen.showResult();
+      if (!result) { status.textContent='Timeout. Try again.'; status.className='status error'; return; }
+      if (result.error) { AppGen.addMessage('assistant', 'Error: ' + result.error); AppGen.renderProject(); status.textContent='Error'; status.className='status error'; return; }
+
+      // Apply outputs
+      AppGen.applyOutputFiles(result.files || []);
+      AppGen.addMessage('assistant', result.message || 'Updated files.');
+      status.textContent = 'Ready.'; status.className='status success';
+      AppGen.renderProject();
+
+      // Persist DB (chat history + new outputs)
+      window.App.pushDbAndSync(null).catch(()=>{});
     },
+
     async downloadZip() {
-      if (!currentResult) return;
+      if (!currentProject || currentProject.outputs.length === 0) { alert('Nothing to download yet.'); return; }
       const zip = new JSZip();
-      currentResult.files.forEach(f => zip.file(f.path.replace(/^\.?\//,''), f.content));
-      const blob = await zip.generateAsync({ type: 'blob' });
+      currentProject.outputs.forEach(f => {
+        zip.file(f.path.replace(/^\.?\//,''), window.App.b64ToU8(f.content_base64));
+      });
+      const blob = await zip.generateAsync({ type:'blob' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = (slugify(currentResult.prompt)||'site') + '.zip';
+      a.href = url; a.download = (slugify(currentProject.title || 'site')) + '.zip';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     },
+
     async publish() {
-      if (!currentResult) return;
+      if (!currentProject || currentProject.outputs.length === 0) { alert('Nothing to publish.'); return; }
       const slugRaw = q('#publish-slug').value.trim();
-      const slug = slugRaw.match(/^[a-z0-9-]+$/) ? slugRaw : slugify(slugRaw || currentResult.prompt);
+      const slug = slugRaw.match(/^[a-z0-9-]+$/) ? slugRaw : slugify(slugRaw || currentProject.title);
       const status = q('#publish-status');
-      status.textContent = 'Publishing…'; status.className = 'status';
-      const payload = { slug, files: currentResult.files, job_id: currentResult.id, username: window.App.session.username };
+      status.textContent = 'Publishing…'; status.className='status pending';
+      const files = currentProject.outputs.map(f => ({ path: f.path, content_base64: f.content_base64, mime: f.mime }));
+      const payload = { slug, files, project_id: currentProject.id, username: window.App.session.username };
       await window.App.postWebhook(window.App.WEBHOOK_PUBLISH, payload);
-      // Optimistically update DB; the commit will happen server-side
-      run('UPDATE generations SET published_slug = ? WHERE id = ?', [slug, currentResult.id]);
-      await window.App.pushDb().catch(()=>{});
-      currentResult.published_slug = slug;
-      status.innerHTML = 'Published. Site will be live at <a href="./sites/'+escHTML(slug)+'/" target="_blank">./sites/'+escHTML(slug)+'/</a> in ~60s.';
-      status.className = 'status success';
+      run('UPDATE projects SET published_slug = ? WHERE id = ?', [slug, currentProject.id]);
+      currentProject.published_slug = slug;
+      AppGen.renderProject();
+      status.innerHTML = 'Publishing. Live at <a href="./sites/'+escHTML(slug)+'/" target="_blank">./sites/'+escHTML(slug)+'/</a> in ~60s.';
+      status.className='status success';
+      window.App.pushDbAndSync(null).catch(()=>{});
+    },
+
+    renderHistory() {
+      const s = window.App.session;
+      let rows;
+      if (s.role === 'admin') rows = exec('SELECT p.id, p.title, p.username, p.updated_at, p.published_slug, (SELECT COUNT(*) FROM project_messages WHERE project_id=p.id) AS msg_count FROM projects p ORDER BY p.updated_at DESC');
+      else rows = exec('SELECT p.id, p.title, p.username, p.updated_at, p.published_slug, (SELECT COUNT(*) FROM project_messages WHERE project_id=p.id) AS msg_count FROM projects p WHERE p.username = ? ORDER BY p.updated_at DESC', [s.username]);
+      const empty = q('#history-empty');
+      const table = q('#history-table');
+      const tbody = q('#history-table tbody');
+      if (!tbody) return;
+      if (rows.length === 0) { empty.style.display=''; table.style.display='none'; return; }
+      empty.style.display='none'; table.style.display='';
+      tbody.innerHTML = rows.map(r => {
+        const pub = r.published_slug ? ('<a href="./sites/'+escHTML(r.published_slug)+'/" target="_blank">'+escHTML(r.published_slug)+'</a>') : '<span class="muted">—</span>';
+        return '<tr><td>'+escHTML(r.title||'(untitled)')+'</td><td>'+escHTML(r.username||'')+'</td><td>'+escHTML(r.updated_at||'')+'</td><td>'+escHTML(r.msg_count||0)+'</td><td>'+pub+'</td><td><button class="btn history-open" data-id="'+escHTML(r.id)+'">Open</button></td></tr>';
+      }).join('');
+      all('.history-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (window.App.session.role !== 'admin' && btn.closest('tr').cells[1].textContent !== window.App.session.username) return;
+          AppGen.loadProject(btn.getAttribute('data-id'));
+        });
+      });
     }
   };
   window.AppGen = AppGen;
 
-  // Form submission
-  document.addEventListener('submit', (e) => {
-    if (e.target && e.target.id === 'gen-form') {
-      e.preventDefault();
-      if (window.App.session.role !== 'admin') return;
-      const prompt = q('textarea[name=prompt]', e.target).value.trim();
-      if (!prompt) return;
-      AppGen.generate(prompt);
-    }
-  });
-
-  // Clicks: tabs, buttons
+  // Tabs
   document.addEventListener('click', (e) => {
     const t = e.target;
     if (t && t.classList && t.classList.contains('tab') && t.hasAttribute('data-tab')) {
       currentTab = t.getAttribute('data-tab');
-      AppGen.showResult();
+      AppGen.renderProject();
+    }
+    if (t && t.classList && t.classList.contains('file-tab') && t.hasAttribute('data-idx')) {
+      currentCodeFileIdx = parseInt(t.getAttribute('data-idx'),10) || 0;
+      AppGen.renderProject();
     }
     if (t && t.id === 'download-zip-btn') AppGen.downloadZip();
     if (t && t.id === 'publish-btn') AppGen.publish();
+    if (t && t.id === 'new-project-btn') { AppGen.newProject(); AppGen.renderProject(); }
+    if (t && t.classList && t.classList.contains('remove-input')) {
+      AppGen.removeInputFile(t.getAttribute('data-path'));
+    }
+    if (t && t.classList && t.classList.contains('file-item')) {
+      // Jump to code view with that file
+      const path = t.getAttribute('data-path'); const kind = t.getAttribute('data-kind');
+      currentTab = 'code';
+      const combined = currentProject.outputs.concat(currentProject.inputs);
+      const idx = combined.findIndex(f => f.path === path && f.kind === kind);
+      if (idx >= 0) currentCodeFileIdx = idx;
+      AppGen.renderProject();
+    }
+  });
+
+  // Chat submit
+  document.addEventListener('submit', (e) => {
+    if (e.target && e.target.id === 'chat-form') {
+      e.preventDefault();
+      if (!window.App.session || window.App.session.role !== 'admin') return;
+      const ta = q('#chat-input');
+      const text = (ta.value||'').trim();
+      if (!text) return;
+      ta.value = '';
+      AppGen.sendMessage(text);
+    }
+  });
+
+  // File input change + drag-drop
+  document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'file-input' && e.target.files) {
+      Array.from(e.target.files).forEach(f => AppGen.addInputFile(f));
+      e.target.value = '';
+    }
+  });
+  document.addEventListener('dragover', (e) => {
+    const dz = e.target.closest && e.target.closest('#drop-zone');
+    if (dz) { e.preventDefault(); dz.classList.add('drag'); }
+  });
+  document.addEventListener('dragleave', (e) => {
+    const dz = e.target.closest && e.target.closest('#drop-zone');
+    if (dz) dz.classList.remove('drag');
+  });
+  document.addEventListener('drop', (e) => {
+    const dz = e.target.closest && e.target.closest('#drop-zone');
+    if (!dz) return;
+    e.preventDefault(); dz.classList.remove('drag');
+    if (e.dataTransfer && e.dataTransfer.files) {
+      Array.from(e.dataTransfer.files).forEach(f => AppGen.addInputFile(f));
+    }
   });
 })();
 
 </script>
-
 </body>
 </html>
